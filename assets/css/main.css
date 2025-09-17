@@ -1,0 +1,17 @@
+@import "../less/main.less";
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Onest", sans-serif;
+}
+
+@font-face {
+  font-family: "Nekst";
+  src: url("/fonts/Nekst-SemiBold.woff2") format("woff2"),
+    url("/fonts/Nekst-SemiBold.woff") format("woff"),
+    url("/fonts/Nekst-SemiBold.eot") format("eot"),
+    url("/fonts/Nekst-SemiBold.ttf") format("ttf");
+  font-weight: 400;
+  font-display: swap;
+}
