@@ -44,7 +44,6 @@ const emit = defineEmits(["click"]);
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  padding: 8px 40px;
   height: 32px;
   border-radius: 40px;
   font-size: 12px;

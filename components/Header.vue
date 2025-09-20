@@ -71,18 +71,16 @@ const toggleChevron = () => {
   <div class="subheader-wrapper">
     <div class="subheader">
       <BaseBreadcrumbs />
-      <div class="subheader__button">
-        <BaseButton color="white" isSubmit="button">
-          <div class="subheader__button-menu">
-            <nuxt-icon
-              name="menu"
-              class="icon icon-menu"
-              alt="Содержание курса"
-            ></nuxt-icon>
-          </div>
-          Содержание курса
-        </BaseButton>
-      </div>
+      <BaseButton color="white" isSubmit="button" class="subheader__button">
+        <div class="subheader__button-menu">
+          <nuxt-icon
+            name="menu"
+            class="icon icon-menu"
+            alt="Содержание курса"
+          ></nuxt-icon>
+        </div>
+        Содержание курса
+      </BaseButton>
     </div>
   </div>
 </template>
@@ -106,6 +104,12 @@ const toggleChevron = () => {
   align-items: center;
   width: 100%;
   max-width: 1530px;
+
+  &__button {
+    width: 100%;
+    max-width: 236px;
+    padding: 8px 40px;
+  }
 }
 
 .header {

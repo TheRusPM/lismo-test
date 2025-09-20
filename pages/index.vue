@@ -1,8 +1,43 @@
-<script setup>
+<script setup lang="ts">
 definePageMeta({
   title: "Каталог курсов",
   layout: "default",
 });
+
+const courseStore = useCourseStore();
+const allCourses = computed(() => courseStore.courses);
+const newCourses = computed(() => allCourses.value.slice(0, 3));
+
+const mostSearchedCategories = [
+  "Курсы по разработке",
+  "Go",
+  "Английский язык",
+  "HTML и CSS",
+  "Матстатистика",
+  "JavaScript",
+  "ООП",
+  "Базы данных",
+  "Проектный менеджмент",
+  "AI",
+  "Графический дизайн",
+  "Аналитика",
+];
+
+const recommendedCourses = computed(() => {
+  const shuffled = [...allCourses.value].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, 6);
+});
+
+const viewedCourses = computed(() => {
+  const shuffled = [...allCourses.value].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, 3);
+});
+
+const router = useRouter();
+
+function goToNewPage() {
+  router.push("/new");
+}
 </script>
 <template>
   <div class="catalog-page">
@@ -24,6 +59,7 @@ definePageMeta({
               </div>
             </div>
           </div>
+          <div class="catalog-page__content-popular__body"></div>
         </div>
         <div class="catalog-page__content-new">
           <div class="catalog-page__content-new__head">
@@ -43,6 +79,14 @@ definePageMeta({
               <nuxt-icon name="arrow" class="icon icon-arrow"></nuxt-icon>
             </NuxtLink>
           </div>
+          <div class="catalog-page__content-new__body">
+            <CourseCard
+              v-for="course in newCourses"
+              :key="course.id"
+              :course-id="course.id"
+              class="catalog-page__course-card"
+            />
+          </div>
         </div>
         <div class="catalog-page__content-most">
           <div class="catalog-page__content-most__head">
@@ -53,6 +97,18 @@ definePageMeta({
                 </h2>
               </div>
             </div>
+          </div>
+          <div class="catalog-page__content-most__body">
+            <BaseButton
+              v-for="(category, i) in mostSearchedCategories"
+              :key="i"
+              @click="goToNewPage"
+              color="white"
+              isSubmit="button"
+              class="catalog-page__content-most__body-button"
+            >
+              {{ category }}
+            </BaseButton>
           </div>
         </div>
         <div class="catalog-page__content-recommended">
@@ -77,6 +133,14 @@ definePageMeta({
               <nuxt-icon name="arrow" class="icon icon-arrow"></nuxt-icon>
             </NuxtLink>
           </div>
+          <div class="catalog-page__content-recommended__body">
+            <CourseCard
+              v-for="course in recommendedCourses"
+              :key="course.id"
+              :course-id="course.id"
+              class="catalog-page__course-card"
+            />
+          </div>
         </div>
         <div class="catalog-page__content-developers">
           <div class="catalog-page__content-developers__head">
@@ -87,7 +151,7 @@ definePageMeta({
                   class="icon icon-lightning"
                 ></nuxt-icon>
                 <h2 class="catalog-page__content-developers__head-title-text">
-                  Популярные курсы
+                  Станьте частью сообщества разработчиков
                 </h2>
               </div>
               <p class="catalog-page__content-developers__head-description">
@@ -108,6 +172,14 @@ definePageMeta({
               </div>
             </div>
           </div>
+          <div class="catalog-page__content-viewed__body">
+            <CourseCard
+              v-for="course in viewedCourses"
+              :key="course.id"
+              :course-id="course.id"
+              class="catalog-page__course-card"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -118,7 +190,7 @@ definePageMeta({
   &__title {
     font-family: "Nekst", sans-serif;
     font-size: 32px;
-    margin: 36px 0 24px;
+    margin: 36px 0 64px;
   }
 
   &__wrapper {
@@ -176,6 +248,21 @@ definePageMeta({
     border: 1px solid @gray20;
   }
 
+  &__content-most {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    &__body {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    &__body-button {
+      padding: 8px 40px;
+    }
+  }
+
   &__content-developers {
     background-color: @green10;
     border: 1px solid @green40;
@@ -209,6 +296,28 @@ definePageMeta({
       font-weight: bold;
       color: @purple80;
       text-decoration: none;
+
+      &:hover,
+      &:hover .icon-arrow:deep(svg),
+      &:hover .icon-arrow:deep(path) {
+        color: @purple70;
+      }
+    }
+  }
+
+  &__content-popular,
+  &__content-new,
+  &__content-recommended,
+  &__content-developers,
+  &__content-viewed {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+
+    &__body {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
     }
   }
 }

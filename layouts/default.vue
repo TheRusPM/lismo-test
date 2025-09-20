@@ -27,6 +27,6 @@ import Header from "~/components/Header.vue";
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 1530px;
+  max-width: 1466px;
 }
 </style>
