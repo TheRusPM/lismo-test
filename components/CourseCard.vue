@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from "vue";
+import { computed, ref, onMounted, onUnmounted, nextTick } from "vue";
 import { useCourseStore } from "~/stores/useCourseStore";
 import { useTooltip } from "~/composables/useTooltip";
 
@@ -16,12 +16,26 @@ const courseStore = useCourseStore();
 const getCourseRef = courseStore.getCourseById(props.courseId);
 const course = computed(() => getCourseRef.value);
 
-// Refs для элементов
 const categoryElement = ref<HTMLElement | null>(null);
 const categoryNameElement = ref<HTMLElement | null>(null);
 const titleElement = ref<HTMLElement | null>(null);
+const allTagsPosition = ref<{ x: number; y: number }>({ x: 0, y: 0 });
 
-// Используем композабл для тултипов
+const openAllTags = async () => {
+  showAllTags.value = true;
+  await nextTick();
+
+  if (tagsMoreRef.value) {
+    const tagsMoreRect = tagsMoreRef.value.getBoundingClientRect();
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+    allTagsPosition.value = {
+      x: tagsMoreRect.left + 8,
+      y: tagsMoreRect.bottom + scrollTop + 8,
+    };
+  }
+};
+
 const {
   tooltipContent: hoveredTag,
   tooltipPosition: tagTooltipPosition,
@@ -89,6 +103,10 @@ const handleClickOutside = (event: MouseEvent) => {
   }
 };
 
+const stopPropagation = (event: MouseEvent) => {
+  event.stopPropagation();
+};
+
 onMounted(() => {
   document.addEventListener("click", handleClickOutside);
 });
@@ -96,10 +114,6 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener("click", handleClickOutside);
 });
-
-const stopPropagation = (event: MouseEvent) => {
-  event.stopPropagation();
-};
 </script>
 <template>
   <div
@@ -160,14 +174,18 @@ const stopPropagation = (event: MouseEvent) => {
       >
         <div
           class="course-card__block2-info__title"
-          @mouseenter="handleCategoryHover"
-          @mouseleave="hideCategoryTooltip"
+          :class="{
+            'course-card__block2-info__title--horizontal': props.isHorizontal,
+          }"
+          @mouseenter="handleTitleHover"
+          @mouseleave="hideTitleTooltip"
         >
           <h3
             ref="titleElement"
             class="course-card__block2-info__title-text"
             :class="{
-              'course-card__block2-info__title--horizontal': props.isHorizontal,
+              'course-card__block2-info__title-text--horizontal':
+                props.isHorizontal,
             }"
           >
             {{ course.title }}
@@ -184,7 +202,7 @@ const stopPropagation = (event: MouseEvent) => {
             {{ course.description }}
           </p>
         </div>
-        <div class="course-card__block2-info__tags">
+        <div class="course-card__block2-info__tags" style="position: relative">
           <span
             v-for="tag in visibleTags"
             :key="tag"
@@ -199,28 +217,33 @@ const stopPropagation = (event: MouseEvent) => {
             ref="tagsMoreRef"
             v-if="hiddenTags.length > 0"
             class="course-card__block2-info__tags-more"
-            @click="
-              showAllTags = true;
-              $event.stopPropagation();
-            "
+            @click="openAllTags"
           >
             +{{ hiddenTags.length }}
-            <div
-              v-if="showAllTags"
-              ref="allTagsRef"
-              class="course-card__block2-info__all-tags"
-              @click="stopPropagation"
-            >
+
+            <teleport to="body">
               <div
-                v-for="tag in course.tags"
-                :key="tag"
-                class="course-card__block2-info__all-tags-item"
-                @mouseenter="showTagTooltip($event, tag)"
-                @mouseleave="hideTagTooltip"
+                v-if="showAllTags"
+                ref="allTagsRef"
+                class="course-card__block2-info__all-tags"
+                :style="{
+                  position: 'absolute',
+                  left: `${allTagsPosition.x}px`,
+                  top: `${allTagsPosition.y}px`,
+                }"
+                @click="stopPropagation"
               >
-                {{ tag }}
+                <div
+                  v-for="tag in course.tags"
+                  :key="tag"
+                  class="course-card__block2-info__all-tags-item"
+                  @mouseenter="showTagTooltip($event, tag)"
+                  @mouseleave="hideTagTooltip"
+                >
+                  {{ tag }}
+                </div>
               </div>
-            </div>
+            </teleport>
           </span>
         </div>
       </div>
@@ -478,6 +501,7 @@ const stopPropagation = (event: MouseEvent) => {
     }
 
     &__tags {
+      position: relative;
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
@@ -505,11 +529,11 @@ const stopPropagation = (event: MouseEvent) => {
 
     &__tags-more {
       display: flex;
-      align-items: center;
+      align-items: self-start;
       position: relative;
       cursor: pointer;
       width: fit-content;
-      max-width: 170px;
+      max-width: 60px;
       height: 16px;
       max-height: 16px;
       line-height: 17px;
@@ -533,16 +557,18 @@ const stopPropagation = (event: MouseEvent) => {
       position: absolute;
       max-height: 200px;
       width: 100%;
-      min-width: 160px;
+      max-width: 160px;
       overflow-y: auto;
       background: @white;
       border: 1px solid @gray20;
       border-radius: 8px;
       padding: 6px;
-      margin-top: 170px;
+      margin-top: -4px;
       margin-left: -12px;
       z-index: 10;
       cursor: auto;
+      animation: tagsExpand 0.3s ease-out;
+      transform-origin: top center;
 
       &::-webkit-scrollbar {
         width: 8px;
@@ -622,7 +648,6 @@ const stopPropagation = (event: MouseEvent) => {
   }
 
   &__tooltip {
-    // position: absolute;
     position: fixed;
     background: @white;
     border: 1px solid @gray20;
@@ -652,5 +677,18 @@ const stopPropagation = (event: MouseEvent) => {
   height: 24px;
   color: @white;
   fill: none !important;
+}
+
+@keyframes tagsExpand {
+  0% {
+    transform: scaleY(0);
+    opacity: 0;
+    max-height: 0;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 1;
+    max-height: 200px;
+  }
 }
 </style>

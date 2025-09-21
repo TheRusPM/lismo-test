@@ -59,7 +59,9 @@ function goToNewPage() {
               </div>
             </div>
           </div>
-          <div class="catalog-page__content-popular__body"></div>
+          <div class="catalog-page__content-popular__body">
+            <BaseSlider :course-ids="[1, 2, 3, 4, 5]" />
+          </div>
         </div>
         <div class="catalog-page__content-new">
           <div class="catalog-page__content-new__head">
@@ -160,6 +162,9 @@ function goToNewPage() {
               </p>
             </div>
           </div>
+          <div class="catalog-page__content-developers__body">
+            <BaseSlider :course-ids="[1, 6, 10, 11]" />
+          </div>
         </div>
         <div class="catalog-page__content-viewed">
           <div class="catalog-page__content-viewed__head">
@@ -246,6 +251,11 @@ function goToNewPage() {
   &__content-popular {
     background-color: @gray10;
     border: 1px solid @gray20;
+    padding: 32px 0;
+
+    &__head {
+      margin: 0 32px;
+    }
   }
 
   &__content-most {
@@ -266,6 +276,11 @@ function goToNewPage() {
   &__content-developers {
     background-color: @green10;
     border: 1px solid @green40;
+    padding: 32px 0;
+
+    &__head {
+      margin: 0 32px;
+    }
 
     &__head-description {
       margin-top: 4px;
