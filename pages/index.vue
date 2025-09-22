@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useCourseStore } from "~/stores/useCourseStore";
+
 definePageMeta({
   title: "Каталог курсов",
   layout: "default",

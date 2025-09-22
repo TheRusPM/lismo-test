@@ -1,11 +1,36 @@
 <script setup lang="ts">
 import Logo from "./base/BaseLogo.vue";
+import BaseBurger from "~/components/base/BaseBurger.vue";
+import { useMobile } from "~/composables/useMobile";
 
+const { isMobile } = useMobile();
+const isNavbarOpen = ref(false);
 const isRotated = ref(false);
 
 const toggleChevron = () => {
   isRotated.value = !isRotated.value;
 };
+
+const setBodyOverflow = (value: "hidden" | "auto") => {
+  document.body.style.overflow = value;
+};
+
+const toggleNavbar = () => {
+  isNavbarOpen.value = !isNavbarOpen.value;
+  setBodyOverflow(isNavbarOpen.value ? "hidden" : "auto");
+  console.log(isMobile.value);
+};
+
+const closeNavbar = () => {
+  if (isNavbarOpen.value) {
+    isNavbarOpen.value = false;
+    setBodyOverflow("auto");
+  }
+};
+
+// watch(() => router.currentRoute.value.path, () => {
+//     closeNavbar()
+// })
 </script>
 <template>
   <div class="header-wrapper">
@@ -28,7 +53,13 @@ const toggleChevron = () => {
           </li>
         </ul>
       </div>
-      <div class="header__block2">
+      <BaseBurger
+        v-if="isMobile"
+        class="header__burger"
+        :isActive="isNavbarOpen"
+        @toggle="toggleNavbar"
+      />
+      <div v-else class="header__block2">
         <div class="header__block2-icons">
           <nuxt-icon
             name="search"

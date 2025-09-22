@@ -1,102 +1,162 @@
 <script setup lang="ts">
+import { ref, reactive, computed, watch, nextTick } from "vue";
 import BaseCollapse from "~/components/base/BaseCollapse.vue";
 import BaseInput from "~/components/base/BaseInput.vue";
 import BaseCheckbox from "~/components/base/BaseCheckbox.vue";
+import { useCourseStore } from "~/stores/useCourseStore";
 
-const specializations = ref([
-  { title: "Программирование", count: 12 },
-  { title: "Дизайн", count: 8 },
-  { title: "Разработка", count: 115 },
-  { title: "Дизайн", count: 111 },
-  { title: "Моделирорование", count: 298 },
-  { title: "Инноватика", count: 19 },
-  { title: "Аналитика больших данных", count: 20 },
-  { title: "Радиотехника", count: 71 },
-  { title: "Физика", count: 61 },
-  { title: "Кибербезопасность", count: 4 },
-  { title: "Юриспруденция", count: 2 },
-  { title: "Маркетинг", count: 6 },
+const store = useCourseStore();
+
+const specializationsSeed = ref<string[]>([
+  "Программирование",
+  "Дизайн",
+  "Разработка",
+  "Физическая культура",
+  "Моделирование",
+  "Инноватика",
+  "Аналитика больших данных",
+  "Радиотехника",
+  "Физика",
+  "Кибербезопасность",
+  "Юриспруденция",
+  "Маркетинг",
 ]);
 
-const humans = ref([
-  { title: "Абитуриенты", count: 4 },
-  { title: "Студенты", count: 6 },
-  { title: "Специалисты", count: 10 },
-  { title: "Преподаватели", count: 3 },
+const humansSeed = ref<string[]>([
+  "Абитуриенты",
+  "Студенты",
+  "Специалисты",
+  "Преподаватели",
 ]);
 
-const prices = ref([
-  { title: "Бесплатно", count: 7 },
-  { title: "До 10 000 ₽", count: 5 },
-  { title: "10 000 – 30 000 ₽", count: 9 },
-  { title: "Более 30 000 ₽", count: 2 },
+const pricesSeed = ref<string[]>([
+  "Бесплатно",
+  "До 10 000 ₽",
+  "10 000 – 30 000 ₽",
+  "Более 30 000 ₽",
 ]);
 
-const periods = ref([
-  { title: "До 1 месяца", count: 6 },
-  { title: "1–3 месяца", count: 11 },
-  { title: "3–6 месяцев", count: 4 },
-  { title: "Более 6 месяцев", count: 3 },
+const periodsSeed = ref<string[]>([
+  "До 1 месяца",
+  "1–3 месяца",
+  "3–6 месяцев",
+  "Более 6 месяцев",
 ]);
 
-const docs = ref([
-  { title: "Сертификат", count: 10 },
-  { title: "Диплом о переподготовке", count: 5 },
+const docsSeed = ref<string[]>(["Сертификат", "Диплом о переподготовке"]);
+
+const skillsSeed = ref<string[]>([
+  "JavaScript",
+  "Python",
+  "Photoshop",
+  "Excel",
+  "Знание алгоритмов",
+  "Аналитическое мышление",
 ]);
 
-const skills = ref([
-  { title: "JavaScript", count: 12 },
-  { title: "Python", count: 8 },
-  { title: "Photoshop", count: 4 },
-  { title: "Excel", count: 6 },
-  { title: "Знание алгоритмов", count: 3 },
-  { title: "Аналитическое мышление", count: 100 },
-]);
+const hideEmpty = true;
+
+function buildFacet(seed: string[], counter: (title: string) => number) {
+  const items = seed.map((title) => ({ title, count: counter(title) }));
+  return hideEmpty ? items.filter((i) => i.count > 0) : items;
+}
+
+const specializations = computed(() =>
+  buildFacet(
+    specializationsSeed.value,
+    (t) => store.courses.filter((c) => c.category === t).length
+  )
+);
+
+const humans = computed(() =>
+  buildFacet(
+    humansSeed.value,
+    (t) => store.courses.filter((c) => c.audience === t).length
+  )
+);
+
+const docs = computed(() =>
+  buildFacet(
+    docsSeed.value,
+    (t) => store.courses.filter((c) => c.doc === t).length
+  )
+);
+
+const skills = computed(() =>
+  buildFacet(
+    skillsSeed.value,
+    (t) => store.courses.filter((c) => c.tags.includes(t)).length
+  )
+);
+
+const prices = computed(() =>
+  buildFacet(
+    pricesSeed.value,
+    (bucket) =>
+      store.courses.filter((c) => store.priceInBucket(c.price, bucket)).length
+  )
+);
+
+const periods = computed(() =>
+  buildFacet(
+    periodsSeed.value,
+    (bucket) =>
+      store.courses.filter((c) => store.periodInBucket(c.duration, bucket))
+        .length
+  )
+);
+
+const GROUPS = [
+  "specializations",
+  "humans",
+  "prices",
+  "periods",
+  "docs",
+  "skills",
+] as const;
+type GroupKey = (typeof GROUPS)[number];
+
+const selected = reactive<Record<GroupKey, Set<string>>>({
+  specializations: new Set(),
+  humans: new Set(),
+  prices: new Set(),
+  periods: new Set(),
+  docs: new Set(),
+  skills: new Set(),
+});
+
+const isChecked = (group: GroupKey, title: string) =>
+  selected[group].has(title);
+const onToggle = (group: GroupKey, title: string, checked: boolean) => {
+  if (checked) selected[group].add(title);
+  else selected[group].delete(title);
+  handleCheckboxChange(group, title, checked);
+};
 
 const isHiddenSpecs = ref(true);
 const isHiddenSkills = ref(true);
-
 const subjectInput = ref("");
 const skillInput = ref("");
 
 const filteredSpecializations = computed(() => {
-  if (subjectInput.value) {
-    return specializations.value.filter((spec) =>
-      spec.title.toLowerCase().includes(subjectInput.value.toLowerCase())
-    );
-  }
-  return specializations.value;
+  const q = subjectInput.value.trim().toLowerCase();
+  const base = specializations.value;
+  return q ? base.filter((s) => s.title.toLowerCase().includes(q)) : base;
 });
-
-const visibleSpecializations = computed(() => {
-  return isHiddenSpecs.value
+const visibleSpecializations = computed(() =>
+  isHiddenSpecs.value
     ? filteredSpecializations.value.slice(0, 5)
-    : filteredSpecializations.value;
-});
+    : filteredSpecializations.value
+);
 
 const filteredSkills = computed(() => {
-  if (skillInput.value) {
-    return skills.value.filter((skill) =>
-      skill.title.toLowerCase().includes(skillInput.value.toLowerCase())
-    );
-  }
-  return skills.value;
+  const q = skillInput.value.trim().toLowerCase();
+  const base = skills.value;
+  return q ? base.filter((s) => s.title.toLowerCase().includes(q)) : base;
 });
-
-const visibleSkills = computed(() => {
-  return isHiddenSkills.value
-    ? filteredSkills.value.slice(0, 5)
-    : filteredSkills.value;
-});
-
-const selectedSpecializations = ref(
-  Array(specializations.value.length).fill(false)
+const visibleSkills = computed(() =>
+  isHiddenSkills.value ? filteredSkills.value.slice(0, 5) : filteredSkills.value
 );
-const selectedHumans = ref(Array(humans.value.length).fill(false));
-const selectedPrices = ref(Array(prices.value.length).fill(false));
-const selectedPeriods = ref(Array(periods.value.length).fill(false));
-const selectedDocs = ref(Array(docs.value.length).fill(false));
-const selectedSkills = ref(Array(skills.value.length).fill(false));
 
 function toggleHiddenSpecs() {
   isHiddenSpecs.value = !isHiddenSpecs.value;
@@ -105,34 +165,42 @@ function toggleHiddenSkills() {
   isHiddenSkills.value = !isHiddenSkills.value;
 }
 
-const checkboxRefs = ref<HTMLElement[][]>([]);
-function setCheckboxRef(
-  el: HTMLElement | null,
-  groupIndex: number,
-  index: number
-) {
-  if (!el) return;
-  if (!checkboxRefs.value[groupIndex]) {
-    checkboxRefs.value[groupIndex] = [];
-  }
-  checkboxRefs.value[groupIndex][index] = el;
-}
-
 let selectCounter = 0;
 const lastSelectedMap = ref<Record<string, number>>({});
 
 function handleCheckboxChange(
-  groupIdx: number,
-  itemIdx: number,
+  group: GroupKey,
+  title: string,
   checked: boolean
 ) {
-  const key = `${groupIdx}-${itemIdx}`;
-  if (checked) {
-    lastSelectedMap.value[key] = ++selectCounter;
-  } else {
-    delete lastSelectedMap.value[key];
-  }
+  const key = `${group}:::${title}`;
+  if (checked) lastSelectedMap.value[key] = ++selectCounter;
+  else delete lastSelectedMap.value[key];
 }
+
+const checkboxRefs = ref<Record<GroupKey, Record<string, HTMLElement>>>({
+  specializations: {},
+  humans: {},
+  prices: {},
+  periods: {},
+  docs: {},
+  skills: {},
+});
+function setCheckboxRef(
+  el: HTMLElement | null,
+  group: GroupKey,
+  title: string
+) {
+  if (!el) return;
+  checkboxRefs.value[group][title] = el;
+}
+
+const selectedSpecializations = computed(() => [...selected.specializations]);
+const selectedHumans = computed(() => [...selected.humans]);
+const selectedPrices = computed(() => [...selected.prices]);
+const selectedPeriods = computed(() => [...selected.periods]);
+const selectedDocs = computed(() => [...selected.docs]);
+const selectedSkills = computed(() => [...selected.skills]);
 
 const groups = [
   selectedSpecializations,
@@ -143,11 +211,10 @@ const groups = [
   selectedSkills,
 ];
 
-const allSelected = computed(() => groups.flatMap((group) => group.value));
-const hasSelected = computed(() => allSelected.value.some(Boolean));
+const allSelected = computed(() => groups.flatMap((g) => g.value));
+const hasSelected = computed(() => allSelected.value.length > 0);
 
 const buttonTop = ref<number | null>(null);
-
 watch(
   lastSelectedMap,
   async () => {
@@ -156,23 +223,28 @@ watch(
       buttonTop.value = null;
       return;
     }
-
-    let lastKey = Object.entries(lastSelectedMap.value).sort(
+    const lastKey = Object.entries(lastSelectedMap.value).sort(
       (a, b) => b[1] - a[1]
     )[0]?.[0];
     if (lastKey) {
-      const [gIdx, iIdx] = lastKey.split("-").map(Number);
-      const el = checkboxRefs.value[gIdx]?.[iIdx];
-      if (el) {
-        buttonTop.value = el.offsetTop;
-      }
+      const [group, title] = lastKey.split(":::");
+      const el = checkboxRefs.value[group as GroupKey]?.[title];
+      if (el) buttonTop.value = el.offsetTop;
     }
   },
   { deep: true }
 );
 
 function applyFilters() {
-  console.log("Применить фильтры");
+  store.setFilters({
+    specializations: selectedSpecializations.value,
+    humans: selectedHumans.value,
+    prices: selectedPrices.value,
+    periods: selectedPeriods.value,
+    docs: selectedDocs.value,
+    skills: selectedSkills.value,
+  });
+  console.log(store.filteredCourses);
 }
 </script>
 <template>
@@ -191,14 +263,16 @@ function applyFilters() {
         <div
           class="sidebar__list"
           v-for="(spec, index) in visibleSpecializations"
-          :key="index"
-          :ref="(el) => setCheckboxRef(el as HTMLElement, 0, index)"
+          :key="`spec-${spec.title}`"
+          :ref="el => setCheckboxRef(el as HTMLElement, 'specializations', spec.title)"
         >
           <BaseCheckbox
             :id="'spec-' + index"
             :text="spec.title"
-            v-model="selectedSpecializations[index]"
-            @update:modelValue="(val) => handleCheckboxChange(0, index, val)"
+            :model-value="isChecked('specializations', spec.title)"
+            @update:modelValue="
+              (val) => onToggle('specializations', spec.title, val)
+            "
           />
           <span class="sidebar__list-count">{{ spec.count }}</span>
         </div>
@@ -222,14 +296,14 @@ function applyFilters() {
       <div
         class="sidebar__list"
         v-for="(human, index) in humans"
-        :key="index"
-        :ref="(el) => setCheckboxRef(el as HTMLElement, 1, index)"
+        :key="`human-${human.title}`"
+        :ref="el => setCheckboxRef(el as HTMLElement, 'humans', human.title)"
       >
         <BaseCheckbox
           :id="'human-' + index"
           :text="human.title"
-          v-model="selectedHumans[index]"
-          @update:modelValue="(val) => handleCheckboxChange(1, index, val)"
+          :model-value="isChecked('humans', human.title)"
+          @update:modelValue="(val) => onToggle('humans', human.title, val)"
         />
         <span class="sidebar__list-count">{{ human.count }}</span>
       </div>
@@ -239,14 +313,14 @@ function applyFilters() {
       <div
         class="sidebar__list"
         v-for="(price, index) in prices"
-        :key="index"
-        :ref="(el) => setCheckboxRef(el as HTMLElement, 2, index)"
+        :key="`price-${price.title}`"
+        :ref="el => setCheckboxRef(el as HTMLElement, 'prices', price.title)"
       >
         <BaseCheckbox
           :id="'price-' + index"
           :text="price.title"
-          v-model="selectedPrices[index]"
-          @update:modelValue="(val) => handleCheckboxChange(2, index, val)"
+          :model-value="isChecked('prices', price.title)"
+          @update:modelValue="(val) => onToggle('prices', price.title, val)"
         />
         <span class="sidebar__list-count">{{ price.count }}</span>
       </div>
@@ -256,14 +330,14 @@ function applyFilters() {
       <div
         class="sidebar__list"
         v-for="(period, index) in periods"
-        :key="index"
-        :ref="(el) => setCheckboxRef(el as HTMLElement, 3, index)"
+        :key="`period-${period.title}`"
+        :ref="el => setCheckboxRef(el as HTMLElement, 'periods', period.title)"
       >
         <BaseCheckbox
           :id="'period-' + index"
           :text="period.title"
-          v-model="selectedPeriods[index]"
-          @update:modelValue="(val) => handleCheckboxChange(0, index, val)"
+          :model-value="isChecked('periods', period.title)"
+          @update:modelValue="(val) => onToggle('periods', period.title, val)"
         />
         <span class="sidebar__list-count">{{ period.count }}</span>
       </div>
@@ -273,14 +347,14 @@ function applyFilters() {
       <div
         class="sidebar__list"
         v-for="(doc, index) in docs"
-        :key="index"
-        :ref="(el) => setCheckboxRef(el as HTMLElement, 4, index)"
+        :key="`doc-${doc.title}`"
+        :ref="el => setCheckboxRef(el as HTMLElement, 'docs', doc.title)"
       >
         <BaseCheckbox
           :id="'doc-' + index"
           :text="doc.title"
-          v-model="selectedDocs[index]"
-          @update:modelValue="(val) => handleCheckboxChange(4, index, val)"
+          :model-value="isChecked('docs', doc.title)"
+          @update:modelValue="(val) => onToggle('docs', doc.title, val)"
         />
         <span class="sidebar__list-count">{{ doc.count }}</span>
       </div>
@@ -297,14 +371,14 @@ function applyFilters() {
         <div
           class="sidebar__list"
           v-for="(skill, index) in visibleSkills"
-          :key="index"
-          :ref="(el) => setCheckboxRef(el as HTMLElement, 5, index)"
+          :key="`skill-${skill.title}`"
+          :ref="el => setCheckboxRef(el as HTMLElement, 'skills', skill.title)"
         >
           <BaseCheckbox
             :id="'skill-' + index"
             :text="skill.title"
-            v-model="selectedSkills[index]"
-            @update:modelValue="(val) => handleCheckboxChange(5, index, val)"
+            :model-value="isChecked('skills', skill.title)"
+            @update:modelValue="(val) => onToggle('skills', skill.title, val)"
           />
           <span class="sidebar__list-count">{{ skill.count }}</span>
         </div>
@@ -323,6 +397,7 @@ function applyFilters() {
         >Скрыть</span
       >
     </BaseCollapse>
+
     <button
       v-if="hasSelected && buttonTop !== null"
       class="sidebar__button"

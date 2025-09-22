@@ -1,22 +1,35 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
+import { coursesData } from "~/data/courses";
 
 export interface ICourse {
   id: number;
   title: string;
   category: string;
+  audience: string;
   image: string;
   description: string;
   tags: string[];
   duration: string;
   startDate: string;
   price: string;
+  doc: string;
   isFavorite: boolean;
+}
+
+export interface ActiveFilters {
+  specializations: string[];
+  humans: string[];
+  prices: string[];
+  periods: string[];
+  docs: string[];
+  skills: string[];
 }
 
 const defaultCourse: ICourse = {
   id: 0,
   title: "",
+  audience: "",
   category: "",
   image: "",
   description: "",
@@ -24,336 +37,78 @@ const defaultCourse: ICourse = {
   duration: "",
   startDate: "",
   price: "",
+  doc: "",
   isFavorite: false,
 };
 
 export const useCourseStore = defineStore("course", () => {
-  const courses = ref<ICourse[]>([
-    {
-      id: 1,
-      title: "Основы веб-разработки",
-      category: "Программирование",
-      image: "/img/catalog/cpp_dev.png",
-      description:
-        "Комплексный курс по созданию веб-сайтов с нуля: от верстки до backend-интеграции.",
-      tags: [
-        "HTML",
-        "CSS",
-        "JavaScript",
-        "TypeScript",
-        "Vue.js",
-        "Nuxt.js",
-        "Git",
-        "REST API",
-        "MySQL",
-        "Микросервисы",
-      ],
-      duration: "6 месяцев",
-      startDate: "старт 15 октября",
-      price: "25000 ₽",
-      isFavorite: false,
-    },
-    {
-      id: 2,
-      title: "UI/UX дизайн",
-      category: "Дизайн",
-      image: "/img/catalog/ux_ui_design.png",
-      description:
-        "Курс по проектированию пользовательских интерфейсов и улучшению опыта взаимодействия.",
-      tags: [
-        "Figma",
-        "Дизайн-системы",
-        "UI/UX",
-        "Adobe XD",
-        "Прототипирование",
-        "User Research",
-      ],
-      duration: "4 месяца",
-      startDate: "старт 1 ноября",
-      price: "20000 ₽",
-      isFavorite: false,
-    },
-    {
-      id: 3,
-      title: "SMM-специалист",
-      category: "Маркетинг",
-      image: "/img/catalog/smm.png",
-      description:
-        "Обучение продвижению в социальных сетях: от стратегий до анализа аудитории.",
-      tags: [
-        "SMM",
-        "Социальные сети",
-        "Маркетинг",
-        "Аналитика",
-        "Instagram",
-        "VK",
-      ],
-      duration: "3 месяца",
-      startDate: "старт 10 октября",
-      price: "бесплатно",
-      isFavorite: false,
-    },
-    {
-      id: 4,
-      title: "iOS-разработчик",
-      category: "Программирование",
-      image: "/img/catalog/ios_dev.png",
-      description:
-        "Разработка мобильных приложений для iOS: от основ Swift до публикации в App Store.",
-      tags: [
-        "Swift",
-        "Xcode",
-        "iOS SDK",
-        "UIKit",
-        "SwiftUI",
-        "App Store",
-        "Core Data",
-      ],
-      duration: "5 месяцев",
-      startDate: "старт 20 октября",
-      price: "30000 ₽",
-      isFavorite: false,
-    },
-    {
-      id: 5,
-      title: "Аналитика больших данных",
-      category: "Аналитика",
-      image: "/img/catalog/analytics.png",
-      description:
-        "Курс по работе с большими данными: сбор, анализ и визуализация с использованием современных инструментов.",
-      tags: [
-        "Big Data",
-        "SQL",
-        "Python",
-        "Tableau",
-        "Hadoop",
-        "Machine Learning Basics",
-      ],
-      duration: "4 месяца",
-      startDate: "старт 5 ноября",
-      price: "22000 ₽",
-      isFavorite: false,
-    },
-    {
-      id: 6,
-      title: "Программирование на Python",
-      category: "Программирование",
-      image: "/img/catalog/python_dev.png",
-      description:
-        "Введение в Python: от базового синтаксиса до создания веб-приложений и автоматизации.",
-      tags: [
-        "Python",
-        "Django",
-        "Flask",
-        "Pandas",
-        "NumPy",
-        "Автоматизация скриптов",
-      ],
-      duration: "3 месяца",
-      startDate: "старт 25 октября",
-      price: "15000 ₽",
-      isFavorite: false,
-    },
-    {
-      id: 7,
-      title: "Инженерия ИИ",
-      category: "Искусственный интеллект",
-      image: "/img/catalog/ai_eng.png",
-      description:
-        "Курс по созданию моделей ИИ: от нейронных сетей до этических аспектов.",
-      tags: [
-        "Machine Learning",
-        "Deep Learning",
-        "TensorFlow",
-        "PyTorch",
-        "NLP",
-        "Computer Vision",
-      ],
-      duration: "6 месяцев",
-      startDate: "старт 15 ноября",
-      price: "35000 ₽",
-      isFavorite: false,
-    },
-    {
-      id: 8,
-      title: "Создание презентаций",
-      category: "Дизайн",
-      image: "/img/catalog/presentations.png",
-      description:
-        "Мастерство создания убедительных презентаций: дизайн, структура и инструменты.",
-      tags: [
-        "PowerPoint",
-        "Keynote",
-        "Google Slides",
-        "Визуализация данных",
-        "Сторителлинг",
-      ],
-      duration: "2 месяца",
-      startDate: "старт 1 декабря",
-      price: "10000 ₽",
-      isFavorite: false,
-    },
-    {
-      id: 9,
-      title: "Тестирование ПО",
-      category: "Программирование",
-      image: "/img/catalog/testing.png",
-      description:
-        "Курс по автоматизированному и ручному тестированию: от unit-тестов до CI/CD.",
-      tags: [
-        "Selenium",
-        "JUnit",
-        "Postman",
-        "Agile Testing",
-        "Bug Tracking",
-        "CI/CD",
-      ],
-      duration: "3 месяца",
-      startDate: "старт 10 декабря",
-      price: "18000 ₽",
-      isFavorite: false,
-    },
-    {
-      id: 10,
-      title: "Разработка на C++",
-      category: "Программирование",
-      image: "/img/catalog/cpp_dev.png",
-      description:
-        "Глубокое погружение в C++: от основ до высокопроизводительных приложений.",
-      tags: [
-        "C++",
-        "OOP",
-        "STL",
-        "Multithreading",
-        "Разработка игр",
-        "Улучшеничшение производительности",
-      ],
-      duration: "5 месяцев",
-      startDate: "старт 20 ноября",
-      price: "28000 ₽",
-      isFavorite: false,
-    },
-    {
-      id: 11,
-      title: "Разработка мобильных приложений на Android",
-      category: "Программирование",
-      image: "/img/catalog/ios_dev.png",
-      description:
-        "Курс по созданию приложений для Android: от Kotlin до интеграции с Google Play.",
-      tags: [
-        "Kotlin",
-        "Android Studio",
-        "Jetpack",
-        "Firebase",
-        "Material Design",
-        "API интеграция",
-      ],
-      duration: "5 месяцев",
-      startDate: "старт 5 октября",
-      price: "27000 ₽",
-      isFavorite: false,
-    },
-    {
-      id: 12,
-      title: "Визуализация данных",
-      category: "Аналитика",
-      image: "/img/catalog/analytics.png",
-      description:
-        "Обучение созданию интерактивных дашбордов и графиков для анализа данных.",
-      tags: [
-        "Tableau",
-        "Power BI",
-        "D3.js",
-        "Data Storytelling",
-        "Excel Advanced",
-        "R Graphics",
-      ],
-      duration: "3 месяца",
-      startDate: "старт 10 ноября",
-      price: "16000 ₽",
-      isFavorite: false,
-    },
-    {
-      id: 13,
-      title: "Разработка игр на Unity",
-      category: "Программирование",
-      image: "/img/catalog/cpp_dev.png",
-      description:
-        "Курс по геймдеву: от 2D/3D-моделей до публикации игр на платформах.",
-      tags: [
-        "Unity",
-        "C#",
-        "3D моделирование",
-        "Physics Engine",
-        "AR/VR",
-        "Многопользовательские игры",
-      ],
-      duration: "4 месяца",
-      startDate: "старт 15 декабря",
-      price: "24000 ₽",
-      isFavorite: false,
-    },
-    {
-      id: 14,
-      title: "Цифровой маркетинг",
-      category: "Маркетинг",
-      image: "/img/catalog/smm.png",
-      description:
-        "Стратегии онлайн-маркетинга: SEO, контент и реклама в цифровой среде.",
-      tags: [
-        "SEO",
-        "PPC",
-        "Email Marketing",
-        "Content Strategy",
-        "Google Analytics",
-        "Social Ads",
-      ],
-      duration: "3 месяца",
-      startDate: "старт 1 октября",
-      price: "бесплатно",
-      isFavorite: false,
-    },
-    {
-      id: 15,
-      title: "Продвинутый веб-дизайн",
-      category: "Дизайн",
-      image: "/img/catalog/ux_ui_design.png",
-      description:
-        "Глубокие техники дизайна сайтов: анимации, responsive и пользовательские исследования.",
-      tags: [
-        "Adobe Illustrator",
-        "Скетчинг",
-        "Адаптивный дизайн",
-        "Анимация",
-        "A/B тестирование",
-        "Вайрфрейминг",
-      ],
-      duration: "4 месяца",
-      startDate: "старт 20 октября",
-      price: "21000 ₽",
-      isFavorite: false,
-    },
-    {
-      id: 16,
-      title: "Основы кибербезопасности",
-      category: "Программирование",
-      image: "/img/catalog/testing.png",
-      description:
-        "Курс по защите данных: от шифрования до обнаружения уязвимостей.",
-      tags: [
-        "Кибебезопасность",
-        "Encryption",
-        "Firewall",
-        "Ethical Hacking",
-        "Penetration Testing",
-        "Compliance",
-      ],
-      duration: "3 месяца",
-      startDate: "старт 5 декабря",
-      price: "19000 ₽",
-      isFavorite: false,
-    },
-  ]);
+  const courses = ref<ICourse[]>(coursesData);
+
+  const parsePrice = (s: string): number | null => {
+    if (!s) return null;
+    const low = s.toLowerCase();
+    if (low.includes("бесплатно")) return 0;
+    const num = Number(s.replace(/\D+/g, ""));
+    return Number.isFinite(num) ? num : null;
+  };
+
+  const priceInBucket = (priceStr: string, bucket: string): boolean => {
+    const p = parsePrice(priceStr);
+    if (bucket === "Бесплатно") return p === 0;
+    if (p === null) return false;
+    if (bucket === "До 10 000 ₽") return p <= 10000;
+    if (bucket === "10 000 – 30 000 ₽") return p > 10000 && p <= 30000;
+    if (bucket === "Более 30 000 ₽") return p > 30000;
+    return false;
+  };
+
+  const parseMonths = (s: string): number => {
+    const m = s.match(/\d+/);
+    return m ? Number(m[0]) : 0;
+  };
+
+  const periodInBucket = (durationStr: string, bucket: string): boolean => {
+    const m = parseMonths(durationStr);
+    if (bucket === "До 1 месяца") return m <= 1;
+    if (bucket === "1–3 месяца") return m >= 1 && m <= 3;
+    if (bucket === "3–6 месяцев") return m > 3 && m <= 6;
+    if (bucket === "Более 6 месяцев") return m > 6;
+    return false;
+  };
+
+  const activeFilters = ref<ActiveFilters>({
+    specializations: [],
+    humans: [],
+    prices: [],
+    periods: [],
+    docs: [],
+    skills: [],
+  });
+
+  function setFilters(partial: Partial<ActiveFilters>) {
+    activeFilters.value = { ...activeFilters.value, ...partial };
+  }
+
+  const filteredCourses = computed(() => {
+    const f = activeFilters.value;
+    return courses.value.filter((c) => {
+      const bySpec = f.specializations.length
+        ? f.specializations.includes(c.category)
+        : true;
+      const byHuman = f.humans.length ? f.humans.includes(c.audience) : true;
+      const byDoc = f.docs.length ? f.docs.includes(c.doc) : true;
+      const byPrice = f.prices.length
+        ? f.prices.some((b) => priceInBucket(c.price, b))
+        : true;
+      const byPeriod = f.periods.length
+        ? f.periods.some((b) => periodInBucket(c.duration, b))
+        : true;
+      const bySkills = f.skills.length
+        ? f.skills.some((s) => c.tags.includes(s))
+        : true;
+      return bySpec && byHuman && byDoc && byPrice && byPeriod && bySkills;
+    });
+  });
 
   const getCourseById = (id: number) =>
     computed(
@@ -361,18 +116,18 @@ export const useCourseStore = defineStore("course", () => {
     );
 
   const toggleFavorite = (courseId: number) => {
-    const courseIndex = courses.value.findIndex(
-      (course) => course.id === courseId
-    );
-    if (courseIndex !== -1) {
-      courses.value[courseIndex].isFavorite =
-        !courses.value[courseIndex].isFavorite;
-    }
+    const i = courses.value.findIndex((c) => c.id === courseId);
+    if (i !== -1) courses.value[i].isFavorite = !courses.value[i].isFavorite;
   };
 
   return {
     courses,
+    filteredCourses,
+    activeFilters,
+    setFilters,
     getCourseById,
     toggleFavorite,
+    priceInBucket,
+    periodInBucket,
   };
 });

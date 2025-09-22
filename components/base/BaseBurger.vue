@@ -1,23 +1,17 @@
 <script setup lang="ts">
 interface IProps {
   isActive?: boolean;
-  position?: string;
 }
 
 const props = withDefaults(defineProps<IProps>(), {
   isActive: false,
-  position: "left",
 });
 const emit = defineEmits(["toggle"]);
 </script>
 
 <template>
   <div
-    :class="[
-      'burger__wrapper',
-      `burger__wrapper--${props.position}`,
-      { 'burger__wrapper--color': !props.isActive },
-    ]"
+    :class="['burger__wrapper', { 'burger__wrapper--color': !props.isActive }]"
     @click="emit('toggle')"
   >
     <div :class="['burger', { 'burger--active': props.isActive }]">
@@ -33,37 +27,19 @@ const emit = defineEmits(["toggle"]);
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 18px;
-  max-width: 18px;
+  height: 30px;
+  max-width: 30px;
   width: 100%;
 
   &__wrapper {
-    max-width: 24px;
+    max-width: 30px;
     width: 100%;
-    height: 24px;
-    position: absolute;
-    top: 20px;
+    height: 30px;
     z-index: 1001;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-
-    &--left {
-      left: 16px;
-
-      // @media @bw400 {
-      //     left: 12px;
-      // }
-    }
-
-    &--right {
-      right: 16px;
-
-      // @media @bw400 {
-      //     right: 12px;
-      // }
-    }
 
     // @media @bw400 {
     //     max-width: 32px;
