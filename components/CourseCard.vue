@@ -86,8 +86,9 @@ const handleCategoryHover = (event: MouseEvent) => {
 };
 
 const handleTitleHover = (event: MouseEvent) => {
-  if (titleElement.value) {
-    showTitleTooltip(event, course.value.title, titleElement.value);
+  const target = event.currentTarget as HTMLElement | null;
+  if (target) {
+    showTitleTooltip(event, course.value.title, target);
   }
 };
 
@@ -264,38 +265,43 @@ onUnmounted(() => {
       ></BaseButton>
     </div>
 
-    <div
-      v-if="tagTooltipVisible && hoveredTag"
-      class="course-card__tooltip"
-      :style="{
-        left: `${tagTooltipPosition.x}px`,
-        top: `${tagTooltipPosition.y + 20}px`,
-      }"
-    >
-      {{ hoveredTag }}
-    </div>
+    <teleport to="body">
+      <div
+        v-if="tagTooltipVisible && hoveredTag"
+        class="course-card__tooltip"
+        :style="{
+          left: `${tagTooltipPosition.x}px`,
+          top: `${tagTooltipPosition.y + 20}px`,
+        }"
+      >
+        {{ hoveredTag }}
+      </div>
+    </teleport>
+    <teleport to="body">
+      <div
+        v-if="categoryTooltipVisible && hoveredCategory"
+        class="course-card__tooltip"
+        :style="{
+          left: `${categoryTooltipPosition.x}px`,
+          top: `${categoryTooltipPosition.y + 20}px`,
+        }"
+      >
+        {{ hoveredCategory }}
+      </div>
+    </teleport>
 
-    <div
-      v-if="categoryTooltipVisible && hoveredCategory"
-      class="course-card__tooltip"
-      :style="{
-        left: `${categoryTooltipPosition.x}px`,
-        top: `${categoryTooltipPosition.y + 20}px`,
-      }"
-    >
-      {{ hoveredCategory }}
-    </div>
-
-    <div
-      v-if="titleTooltipVisible && hoveredTitle"
-      class="course-card__tooltip"
-      :style="{
-        left: `${titleTooltipPosition.x}px`,
-        top: `${titleTooltipPosition.y + 20}px`,
-      }"
-    >
-      {{ hoveredTitle }}
-    </div>
+    <teleport to="body">
+      <div
+        v-if="titleTooltipVisible && hoveredTitle"
+        class="course-card__tooltip"
+        :style="{
+          left: `${titleTooltipPosition.x}px`,
+          top: `${titleTooltipPosition.y + 20}px`,
+        }"
+      >
+        {{ hoveredTitle }}
+      </div>
+    </teleport>
   </div>
 </template>
 <style scoped lang="less">
@@ -554,11 +560,12 @@ onUnmounted(() => {
       flex-direction: column;
       align-items: flex-start;
       gap: 6px;
+      overflow-x: hidden;
+      overflow-y: auto;
       position: absolute;
       max-height: 200px;
       width: 100%;
-      max-width: 160px;
-      overflow-y: auto;
+      max-width: 170px;
       background: @white;
       border: 1px solid @gray20;
       border-radius: 8px;

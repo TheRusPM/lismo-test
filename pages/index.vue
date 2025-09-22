@@ -43,7 +43,9 @@ function goToNewPage() {
   <div class="catalog-page">
     <h1 class="catalog-page__title">Каталог курсов</h1>
     <div class="catalog-page__wrapper">
-      <div class="catalog-page__sidebar"></div>
+      <div class="catalog-page__sidebar">
+        <Sidebar />
+      </div>
       <div class="catalog-page__content">
         <div class="catalog-page__content-popular">
           <div class="catalog-page__content-popular__head">
@@ -203,7 +205,15 @@ function goToNewPage() {
     justify-content: space-between;
     gap: 24px;
     width: 100%;
+    max-width: 1530px;
     margin-bottom: 120px;
+  }
+
+  &__sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 364px;
   }
 
   &__content {

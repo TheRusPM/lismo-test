@@ -13,8 +13,8 @@ const current = ref(0);
 
 const [container, slider] = useKeenSlider({
   slides: {
-    perView: 2,
-    spacing: 24,
+    perView: 2.025,
+    spacing: 0,
   },
   slideChanged(s) {
     current.value = s.track.details.rel;

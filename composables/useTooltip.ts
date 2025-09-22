@@ -5,6 +5,18 @@ export const useTooltip = () => {
   const tooltipPosition = ref({ x: 0, y: 0 });
   const tooltipVisible = ref(false);
 
+  const isOverflowing = (el?: HTMLElement | null) => {
+    if (!el) return false;
+
+    const style = window.getComputedStyle(el);
+
+    if (style.whiteSpace === "nowrap") {
+      return el.scrollWidth > el.clientWidth;
+    }
+
+    return el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth;
+  };
+
   const showTooltip = (
     event: MouseEvent,
     content: string,
@@ -13,9 +25,9 @@ export const useTooltip = () => {
     const targetElement = element || (event.currentTarget as HTMLElement);
 
     const alwaysShow =
-      targetElement.getAttribute("data-always-show") === "true";
+      targetElement?.getAttribute("data-always-show") === "true";
 
-    if (alwaysShow || targetElement.scrollWidth > targetElement.offsetWidth) {
+    if (alwaysShow || isOverflowing(targetElement)) {
       tooltipContent.value = content;
       tooltipPosition.value = {
         x: event.clientX,
