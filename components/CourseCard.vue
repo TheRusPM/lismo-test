@@ -358,7 +358,8 @@ onUnmounted(() => {
     &--active {
       .icon-star:deep(svg),
       .icon-star:deep(path) {
-        fill: @green40 !important;
+        color: @purple80;
+        fill: @purple80 !important;
       }
     }
 

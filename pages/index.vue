@@ -208,7 +208,6 @@ function goToNewPage() {
     gap: 24px;
     width: 100%;
     max-width: 1530px;
-    margin-bottom: 120px;
   }
 
   &__sidebar {

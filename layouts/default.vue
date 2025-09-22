@@ -1,10 +1,13 @@
 <script setup>
 import Header from "~/components/Header.vue";
+import Footer from "~/components/Footer.vue";
+import Navbar from "~/components/Navbar.vue";
 </script>
 
 <template>
   <div class="layout">
     <Header />
+    <Navbar />
     <main class="layout__content">
       <slot />
     </main>
@@ -22,11 +25,15 @@ import Header from "~/components/Header.vue";
   background-color: @gray5;
 }
 
+// .layout__content {
+//   flex-grow: 1;
+//   display: flex;
+//   flex-direction: column;
+//   width: 100%;
+//   max-width: 1530px;
+// }
+
 .layout__content {
-  flex-grow: 1;
   display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 1530px;
 }
 </style>

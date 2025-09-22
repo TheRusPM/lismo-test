@@ -416,11 +416,22 @@ function applyFilters() {
   flex-direction: column;
   justify-content: center;
   gap: 24px;
-  width: 100%;
   max-width: 324px;
   background-color: @white;
   padding: 20px;
   border-radius: 24px;
+
+  @media @bw1170 {
+    gap: 20px;
+  }
+
+  @media @bw768 {
+    gap: 16px;
+  }
+
+  @media @bw600 {
+    gap: 12px;
+  }
 
   &__list-wrapper {
     display: flex;

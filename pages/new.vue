@@ -23,29 +23,61 @@ const courses = computed(() => courseStore.courses);
 </template>
 <style scoped lang="less">
 .new-courses-page {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1530px;
+
+  @media @bw1600 {
+    margin: 0 32px;
+  }
+
+  @media @bw500 {
+    margin: 0;
+  }
+
   &__title {
     font-family: "Nekst", sans-serif;
     font-size: 32px;
     margin: 36px 0 64px;
-  }
 
-  &__wrapper {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    margin-bottom: 120px;
+    @media @bw1440 {
+      margin: 32px 0 40px;
+      font-size: 28px;
+    }
+
+    @media @bw1170 {
+      margin: 32px 0;
+      font-size: 24px;
+    }
+
+    @media @bw500 {
+      margin: 24px 16px 32px 16px;
+      font-size: 22px;
+    }
   }
 
   &__content {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: center;
     gap: 24px;
-    width: 100%;
     padding: 32px;
     border-radius: 24px;
     background-color: @white;
-    margin-bottom: 120px;
+
+    @media @bw1600 {
+      padding: 20px 16px;
+      column-gap: 24px;
+      row-gap: 24px;
+    }
+
+    @media @bw500 {
+      padding: 20px 16px;
+      border-radius: 0;
+      gap: 12px;
+    }
   }
 }
 </style>

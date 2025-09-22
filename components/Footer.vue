@@ -2,19 +2,22 @@
 <template>
   <div class="footer-wrapper">
     <footer class="footer">
-      <div class="footer__block1">
-        <div class="footer__block1-links">
-          <NuxtLink to="/" class="footer__block1-links__link"
-            >Вакансии</NuxtLink
-          >
-          <NuxtLink to="/" class="footer__block1-links__link"
-            >Техническая поддержка</NuxtLink
-          >
+      <div class="footer__left-section">
+        <div class="footer__block1">
+          <div class="footer__block1-links">
+            <NuxtLink to="/" class="footer__block1-links__link"
+              >Вакансии</NuxtLink
+            >
+            <NuxtLink to="/" class="footer__block1-links__link"
+              >Техническая поддержка</NuxtLink
+            >
+          </div>
         </div>
-        <div class="footer__block1-copyright">
-          <p class="footer__block1-copyright__text">© 2023 ФГБОУ ВО ТУСУР</p>
+        <div class="footer__block-copyright">
+          <p class="footer__block-copyright__text">© 2023 ФГБОУ ВО ТУСУР</p>
         </div>
       </div>
+
       <div class="footer__block2">
         <span class="footer__block2-text">Мы в социальных сетях</span>
         <ul class="footer__block2-icons">
@@ -50,7 +53,13 @@
   justify-content: center;
   width: 100%;
   background-color: @purple80;
+  margin-top: 120px;
   padding: 44px 0 40px;
+
+  @media @bw500 {
+    margin-top: 56px;
+    padding-top: 24px;
+  }
 }
 
 .footer {
@@ -59,18 +68,71 @@
   width: 100%;
   max-width: 1530px;
 
+  @media @bw1600 {
+    padding: 0 32px;
+  }
+
+  @media @bw500 {
+    padding: 0 16px;
+    display: grid;
+    grid-template-rows: repeat(3, auto);
+    row-gap: 24px;
+  }
+
+  &__left-section {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+    max-width: 600px;
+
+    @media @bw500 {
+      display: contents;
+    }
+  }
+
+  &__block-copyright {
+    @media @bw500 {
+      grid-row: 3;
+    }
+
+    &__text {
+      color: @gray30;
+      font-size: 14px;
+      font-weight: 400;
+    }
+  }
+
   &__block1 {
     display: flex;
     flex-direction: column;
     gap: 24px;
     width: 100%;
     max-width: 600px;
+
+    @media @bw500 {
+      display: grid;
+    }
   }
 
   &__block1-links {
     display: flex;
     align-items: center;
     gap: 24px;
+
+    @media @bw768 {
+      gap: 0;
+    }
+
+    @media @bw650 {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    @media @bw500 {
+      grid-row: 1;
+    }
 
     &__link {
       width: 100%;
@@ -83,14 +145,6 @@
     }
   }
 
-  &__block1-copyright {
-    &__text {
-      color: @gray30;
-      font-size: 14px;
-      font-weight: 400;
-    }
-  }
-
   &__block2 {
     display: flex;
     flex-direction: column;
@@ -98,6 +152,14 @@
     width: 100%;
     max-width: 185px;
     gap: 20px;
+
+    @media @bw650 {
+      gap: 16px;
+    }
+
+    @media @bw500 {
+      grid-row: 2;
+    }
   }
 
   &__block2-text {
@@ -113,6 +175,10 @@
     gap: 24px;
     width: 100%;
     max-width: 128px;
+
+    @media @bw650 {
+      gap: 16px;
+    }
 
     &__item {
       &:hover .icon-yt:deep(svg),

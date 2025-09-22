@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useNavbar } from "~/composables/useNavbar";
+
 interface IProps {
   isActive?: boolean;
 }
@@ -6,13 +8,20 @@ interface IProps {
 const props = withDefaults(defineProps<IProps>(), {
   isActive: false,
 });
+
 const emit = defineEmits(["toggle"]);
+const { toggle } = useNavbar();
+
+const onClick = () => {
+  toggle();
+  emit("toggle");
+};
 </script>
 
 <template>
   <div
     :class="['burger__wrapper', { 'burger__wrapper--color': !props.isActive }]"
-    @click="emit('toggle')"
+    @click="onClick"
   >
     <div :class="['burger', { 'burger--active': props.isActive }]">
       <span></span>

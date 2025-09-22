@@ -2,35 +2,21 @@
 import Logo from "./base/BaseLogo.vue";
 import BaseBurger from "~/components/base/BaseBurger.vue";
 import { useMobile } from "~/composables/useMobile";
+import { useNavbar } from "~/composables/useNavbar";
 
 const { isMobile } = useMobile();
-const isNavbarOpen = ref(false);
+const { isNavbarOpen, close: closeNavbar } = useNavbar();
 const isRotated = ref(false);
 
 const toggleChevron = () => {
   isRotated.value = !isRotated.value;
 };
 
-const setBodyOverflow = (value: "hidden" | "auto") => {
-  document.body.style.overflow = value;
-};
-
-const toggleNavbar = () => {
-  isNavbarOpen.value = !isNavbarOpen.value;
-  setBodyOverflow(isNavbarOpen.value ? "hidden" : "auto");
-  console.log(isMobile.value);
-};
-
-const closeNavbar = () => {
-  if (isNavbarOpen.value) {
-    isNavbarOpen.value = false;
-    setBodyOverflow("auto");
+watch(isMobile, (val) => {
+  if (!val) {
+    closeNavbar();
   }
-};
-
-// watch(() => router.currentRoute.value.path, () => {
-//     closeNavbar()
-// })
+});
 </script>
 <template>
   <div class="header-wrapper">
@@ -57,25 +43,20 @@ const closeNavbar = () => {
         v-if="isMobile"
         class="header__burger"
         :isActive="isNavbarOpen"
-        @toggle="toggleNavbar"
       />
       <div v-else class="header__block2">
         <div class="header__block2-icons">
           <nuxt-icon
             name="search"
             class="icon icon-search"
-            alt="Мои курсы"
+            alt="Поиск"
           ></nuxt-icon>
           <nuxt-icon
             name="notification"
             class="icon icon-notification"
-            alt="Мои курсы"
+            alt="Уведомления"
           ></nuxt-icon>
-          <nuxt-icon
-            name="chat"
-            class="icon icon-chat"
-            alt="Мои курсы"
-          ></nuxt-icon>
+          <nuxt-icon name="chat" class="icon icon-chat" alt="Чат"></nuxt-icon>
         </div>
         <div class="header__block2-profile">
           <div class="header__block2-profile__photo">
@@ -125,6 +106,13 @@ const closeNavbar = () => {
 }
 
 .header-wrapper {
+  position: sticky;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 1000;
+
   border-bottom: 1px solid @gray10;
 }
 
@@ -140,10 +128,22 @@ const closeNavbar = () => {
     width: 100%;
     max-width: 236px;
     padding: 8px 40px;
+
+    @media @bw768 {
+      display: none;
+    }
   }
 }
 
 .header {
+  @media @bw1600 {
+    padding: 0 32px;
+  }
+
+  @media @bw500 {
+    padding: 0 16px;
+  }
+
   &__block1 {
     display: flex;
     justify-content: space-between;
@@ -155,6 +155,10 @@ const closeNavbar = () => {
     align-items: center;
     gap: 32px;
     max-width: 271px;
+
+    @media @bw1170 {
+      display: none;
+    }
   }
 
   &__block2,
@@ -163,11 +167,20 @@ const closeNavbar = () => {
     justify-content: space-between;
     align-items: center;
     gap: 40px;
+
+    @media @bw960 {
+      justify-content: flex-end;
+      gap: 20px;
+    }
   }
 
   &__block2 {
     width: 100%;
     max-width: 405px;
+
+    @media @bw768 {
+      display: none;
+    }
   }
 
   &__block2-profile {
@@ -231,8 +244,17 @@ const closeNavbar = () => {
 }
 
 .subheader {
+  height: 32px;
   padding: 8px 0;
   background-color: @white;
+
+  @media @bw1600 {
+    padding: 8px 32px;
+  }
+
+  @media @bw500 {
+    padding: 8px 16px;
+  }
 
   &__breadcrumbs {
     display: flex;
