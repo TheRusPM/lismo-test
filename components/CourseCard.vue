@@ -663,33 +663,6 @@ onUnmounted(() => {
       cursor: auto;
       animation: tagsExpand 0.3s ease-out;
       transform-origin: top center;
-
-      &::-webkit-scrollbar {
-        width: 8px;
-      }
-
-      &::-webkit-scrollbar-track {
-        background: transparent;
-      }
-
-      &::-webkit-scrollbar-thumb {
-        background-color: @gray100;
-        border-radius: 10px;
-      }
-
-      scrollbar-width: thin;
-      scrollbar-color: @gray40 transparent;
-
-      -ms-overflow-style: -ms-autohiding-scrollbar;
-      scrollbar-width: thin;
-      scrollbar-color: @gray40 transparent;
-
-      &::-webkit-scrollbar-button {
-        display: none;
-      }
-      &::-webkit-scrollbar-corner {
-        background: transparent;
-      }
     }
 
     &__all-tags-item {

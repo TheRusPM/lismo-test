@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { useCourseStore } from "~/stores/useCourseStore";
 import { useFilterStore } from "~/stores/useFiltersStore";
+import { useMobile } from "~/composables/useMobile";
 import BaseTabsFilters from "~/components/base/BaseTabsFilters.vue";
 import BasePaginator from "~/components/base/BasePaginator.vue";
+import BaseModal from "~/components/base/BaseModal.vue";
+
+const { isMobile } = useMobile();
 
 definePageMeta({
   title: "Каталог курсов",
@@ -86,6 +90,21 @@ watch(lastPage, (lp) => {
   if (page.value > lp) page.value = lp;
 });
 
+const isModalOpen = ref(false);
+
+watch(
+  () => courseStore.activeFilters,
+  () => {
+    if (isMobile.value) isModalOpen.value = false;
+  },
+  { deep: true }
+);
+
+function openModal() {
+  isModalOpen.value = true;
+  document.body.style.overflow = "hidden";
+}
+
 const router = useRouter();
 function goToNewPage() {
   router.push("/new");
@@ -95,9 +114,17 @@ function goToNewPage() {
   <div class="catalog-page">
     <h1 class="catalog-page__title">Каталог курсов</h1>
     <div class="catalog-page__wrapper">
-      <div class="catalog-page__sidebar">
+      <div v-if="!isMobile" class="catalog-page__sidebar">
         <Sidebar />
       </div>
+      <BaseButton
+        v-else
+        class="catalog-page__button"
+        isSubmit="button"
+        @click="openModal"
+      >
+        Открыть фильтры
+      </BaseButton>
       <div v-if="!hasAppliedFilters" class="catalog-page__content">
         <div class="catalog-page__content-popular">
           <div class="catalog-page__content-popular__head">
@@ -242,7 +269,10 @@ function goToNewPage() {
         </div>
       </div>
       <div v-else class="catalog-page__search">
-        <div class="catalog-page__search-filters" v-if="filterStore.isVisible">
+        <div
+          class="catalog-page__search-filters"
+          v-if="!isMobile && hasAppliedFilters"
+        >
           <BaseTabsFilters
             v-for="(filter, i) in filterStore.visibleFilters"
             :key="i"
@@ -292,9 +322,35 @@ function goToNewPage() {
         </div>
       </div>
     </div>
+    <BaseModal v-model="isModalOpen" title="Фильтры">
+      <div class="filters-modal">
+        <div v-if="hasAppliedFilters" class="filters-modal__chips">
+          <BaseTabsFilters
+            v-for="(filter, i) in filterStore.visibleFilters"
+            :key="i"
+            :text="filter.tag"
+            :category="filter.title"
+          />
+        </div>
+        <Sidebar />
+      </div>
+    </BaseModal>
   </div>
 </template>
 <style scoped lang="less">
+.filters-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: fit-content;
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
 .catalog-page {
   flex-grow: 1;
   display: flex;
@@ -334,6 +390,7 @@ function goToNewPage() {
   &__wrapper {
     display: flex;
     justify-content: space-between;
+    align-items: flex-start;
     gap: 24px;
     width: 100%;
     max-width: 1530px;
@@ -348,8 +405,17 @@ function goToNewPage() {
     flex-direction: column;
     width: 100%;
     max-width: 364px;
+  }
 
-    @media @bw650 {
+  &__button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: max-content;
+    padding: 12px 24px;
+
+    @media @bw600 {
+      width: 100%;
     }
   }
 
