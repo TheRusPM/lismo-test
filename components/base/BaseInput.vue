@@ -50,7 +50,7 @@ function clearInput() {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
+    width: calc(100% - 24px);
     max-width: 298px;
     padding: 12px;
     border: 1px solid @gray30;
@@ -59,30 +59,6 @@ function clearInput() {
 
     &:focus-within {
       border-color: @purple100;
-    }
-
-    @media @bw1440 {
-      max-width: 260px;
-    }
-
-    @media @bw960 {
-      max-width: 240px;
-    }
-
-    @media @bw960 {
-      max-width: 220px;
-    }
-
-    @media @bw768 {
-      max-width: 210px;
-    }
-
-    @media @bw600 {
-      max-width: 200px;
-    }
-
-    @media @bw400 {
-      max-width: 180px;
     }
   }
 }

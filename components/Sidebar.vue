@@ -267,7 +267,7 @@ watch(filterStore.deletedFilter, (df) => {
       <BaseInput
         name="subject"
         id="subject"
-        placeholder="Название направления"
+        placeholder="Поиск"
         v-model="subjectInput"
       />
       <div
@@ -436,6 +436,7 @@ watch(filterStore.deletedFilter, (df) => {
   flex-direction: column;
   justify-content: center;
   gap: 24px;
+  min-width: 250px;
   max-width: 324px;
   background-color: @white;
   padding: 20px;
@@ -457,9 +458,10 @@ watch(filterStore.deletedFilter, (df) => {
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-width: 325px;
-    overflow-y: auto;
+    max-width: 315px;
     max-height: 384px;
+    padding-right: 10px;
+    overflow-y: auto;
 
     &::-webkit-scrollbar {
       width: 8px;

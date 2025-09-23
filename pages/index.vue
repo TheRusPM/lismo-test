@@ -2,6 +2,7 @@
 import { useCourseStore } from "~/stores/useCourseStore";
 import { useFilterStore } from "~/stores/useFiltersStore";
 import BaseTabsFilters from "~/components/base/BaseTabsFilters.vue";
+import BasePaginator from "~/components/base/BasePaginator.vue";
 
 definePageMeta({
   title: "Каталог курсов",
@@ -44,8 +45,48 @@ const hasAppliedFilters = computed(
 
 const searchResults = computed(() => courseStore.filteredCourses);
 
-const router = useRouter();
+const PER_PAGE = 12;
+const page = ref(1);
+const mode = ref<"append" | "page">("append");
 
+const total = computed(() => searchResults.value.length);
+const lastPage = computed(() => Math.max(1, Math.ceil(total.value / PER_PAGE)));
+const hasMore = computed(() => page.value < lastPage.value);
+
+const visibleCourses = computed(() => {
+  if (!total.value) return [];
+  if (mode.value === "append") {
+    return searchResults.value.slice(0, PER_PAGE * page.value);
+  }
+  const start = (page.value - 1) * PER_PAGE;
+  const end = page.value * PER_PAGE;
+  return searchResults.value.slice(start, end);
+});
+
+const onChangePage = (p: number) => {
+  mode.value = "page";
+  page.value = p;
+};
+
+const onShowMore = () => {
+  mode.value = "append";
+  if (page.value < lastPage.value) page.value += 1;
+};
+
+watch(
+  () => courseStore.activeFilters,
+  () => {
+    page.value = 1;
+    mode.value = "append";
+  },
+  { deep: true }
+);
+
+watch(lastPage, (lp) => {
+  if (page.value > lp) page.value = lp;
+});
+
+const router = useRouter();
 function goToNewPage() {
   router.push("/new");
 }
@@ -211,11 +252,11 @@ function goToNewPage() {
         </div>
         <div class="catalog-page__search-result">
           <div
-            v-if="searchResults.length"
+            v-if="visibleCourses.length"
             class="catalog-page__search-result__cards"
           >
             <CourseCard
-              v-for="course in searchResults"
+              v-for="course in visibleCourses"
               :key="course.id"
               :course-id="course.id"
               class="catalog-page__course-card"
@@ -223,6 +264,30 @@ function goToNewPage() {
           </div>
           <div v-else class="catalog-page__search-result__empty">
             К сожалению, нет результатов удовлетворяющих вашему запросу
+          </div>
+        </div>
+        <div v-if="total" class="catalog-page__search-controls">
+          <BaseButton
+            isSubmit="button"
+            color="white"
+            :disabled="!hasMore"
+            @click="onShowMore"
+            class="catalog-page__search-controls__button"
+          >
+            Показать еще
+            <nuxt-icon name="arrow" class="icon icon-arrow icon-arrow--down" />
+          </BaseButton>
+
+          <div
+            class="catalog-page__search-controls__paginator"
+            v-if="lastPage > 1"
+          >
+            <BasePaginator
+              :count-of-elements="total"
+              :page="page"
+              @update:page="onChangePage"
+              @changePage="onChangePage"
+            />
           </div>
         </div>
       </div>
@@ -535,6 +600,25 @@ function goToNewPage() {
       }
     }
   }
+
+  &__search-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &__button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: fit-content;
+      padding: 12px 32px;
+      gap: 12px;
+      height: 48px;
+      max-height: 48px;
+      font-size: 16px;
+      background-color: @gray5;
+    }
+  }
 }
 
 .icon-lightning:deep(svg),
@@ -555,5 +639,9 @@ function goToNewPage() {
   color: @purple80;
   fill: none !important;
   cursor: pointer;
+}
+
+.icon-arrow--down {
+  transform: rotate(90deg);
 }
 </style>
