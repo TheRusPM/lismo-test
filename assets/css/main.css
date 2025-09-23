@@ -12,6 +12,5 @@ body {
     url("/fonts/Nekst-SemiBold.woff") format("woff"),
     url("/fonts/Nekst-SemiBold.eot") format("eot"),
     url("/fonts/Nekst-SemiBold.ttf") format("ttf");
-  font-weight: 400;
   font-display: swap;
 }
