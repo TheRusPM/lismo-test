@@ -66,73 +66,53 @@ const [container, slider] = useKeenSlider({
   width: 100%;
   max-width: 1142px;
 
-  @media (max-width: 1522px) {
+  @media @bw1600 {
     max-width: 1024px;
   }
 
   @media @bw1440 {
-    max-width: 1000px;
-  }
-
-  @media (max-width: 1380px) {
     max-width: 960px;
   }
 
-  // @media (max-width: 1472) {
-  //   max-width: 1024px;
-  // }
+  @media (max-width: 1340px) {
+    max-width: 886px;
+  }
 
-  // @media (max-width: 1280px) {
-  //   max-width: 888px;
-  // }
+  @media (max-width: 1266px) {
+    max-width: 812px;
+  }
 
-  // @media (max-width: 1220px) {
-  //   max-width: 846px;
-  // }
+  @media (max-width: 1192px) {
+    max-width: 737px;
+  }
 
-  // @media @bw1170 {
-  //   max-width: 824px;
-  // }
+  @media (max-width: 1116px) {
+    max-width: 661px;
+  }
 
-  // @media (max-width: 1152px) {
-  //   max-width: 800px;
-  // }
+  @media (max-width: 1041px) {
+    max-width: 586px;
+  }
 
-  // @media (max-width: 1080px) {
-  //   max-width: 750px;
-  // }
+  @media (max-width: 966px) {
+    max-width: 500px;
+  }
 
-  // @media @bw1020 {
-  //   max-width: 728px;
-  // }
+  @media (max-width: 880px) {
+    max-width: 425px;
+  }
 
-  // @media @bw960 {
-  //   max-width: 666px;
-  // }
+  @media (max-width: 805px) {
+    max-width: 372px;
+  }
 
-  // @media (max-width: 910px) {
-  //   max-width: 632px;
-  // }
+  @media @bw768 {
+    max-width: 500px;
+  }
 
-  // @media (max-width: 870px) {
-  //   max-width: 604px;
-  // }
-
-  // @media (max-width: 846px) {
-  //   max-width: 586px;
-  // }
-
-  // @media (max-width: 828px) {
-  //   max-width: 520px;
-  // }
-
-  // @media @bw768 {
-  //   max-width: calc(fit-content - 32px);
-  // }
-
-  // @media @bw600 {
-  //   max-width: 446px;
-  // }
+  @media @bw600 {
+    max-width: 446px;
+  }
 
   .keen-slider {
     overflow: hidden;

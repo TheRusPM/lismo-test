@@ -348,6 +348,16 @@ onUnmounted(() => {
       flex-direction: column;
       justify-content: flex-start;
     }
+
+    @media @w768-bw960 {
+      max-width: 254px;
+      width: fit-content;
+      max-height: 455px;
+      height: fit-content;
+      padding: 12px;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
   }
 
   &__block1 {
@@ -452,6 +462,13 @@ onUnmounted(() => {
         max-height: 153px;
         height: 153px;
       }
+
+      @media @w768-bw960 {
+        max-width: 230px;
+        min-width: 230px;
+        max-height: 153px;
+        height: 153px;
+      }
     }
   }
 
@@ -485,6 +502,12 @@ onUnmounted(() => {
         max-height: 262px;
         gap: 12px;
       }
+
+      @media @w768-bw960 {
+        max-width: 230px;
+        max-height: 262px;
+        gap: 12px;
+      }
     }
   }
 
@@ -506,6 +529,12 @@ onUnmounted(() => {
       height: 186px;
 
       @media @bw600 {
+        max-width: 214px;
+        max-height: 170px;
+        height: fit-content;
+      }
+
+      @media @w768-bw960 {
         max-width: 214px;
         max-height: 170px;
         height: fit-content;
@@ -542,6 +571,10 @@ onUnmounted(() => {
         @media @bw600 {
           font-size: 16px;
         }
+
+        @media @w768-bw960 {
+          font-size: 16px;
+        }
       }
     }
 
@@ -560,6 +593,10 @@ onUnmounted(() => {
         max-width: 228px;
 
         @media @bw600 {
+          max-width: 214px;
+        }
+
+        @media @w768-bw960 {
           max-width: 214px;
         }
       }

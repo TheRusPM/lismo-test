@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import Logo from "./base/BaseLogo.vue";
 import BaseBurger from "~/components/base/BaseBurger.vue";
 import { useMobile } from "~/composables/useMobile";
 import { useNavbar } from "~/composables/useNavbar";
+import Logo from "./base/BaseLogo.vue";
 
 const { isMobile } = useMobile();
 const { isNavbarOpen, close: closeNavbar } = useNavbar();
@@ -45,19 +45,25 @@ watch(isMobile, (val) => {
         :isActive="isNavbarOpen"
       />
       <div v-else class="header__block2">
-        <div class="header__block2-icons">
-          <nuxt-icon
-            name="search"
-            class="icon icon-search"
-            alt="Поиск"
-          ></nuxt-icon>
-          <nuxt-icon
-            name="notification"
-            class="icon icon-notification"
-            alt="Уведомления"
-          ></nuxt-icon>
-          <nuxt-icon name="chat" class="icon icon-chat" alt="Чат"></nuxt-icon>
-        </div>
+        <ul class="header__block2-icons">
+          <li class="header__block2-icons__item">
+            <nuxt-icon
+              name="search"
+              class="icon icon-search"
+              alt="Поиск"
+            ></nuxt-icon>
+          </li>
+          <li class="header__block2-icons__item">
+            <nuxt-icon
+              name="notification"
+              class="icon icon-notification"
+              alt="Уведомления"
+            ></nuxt-icon>
+          </li>
+          <li class="header__block2-icons__item">
+            <nuxt-icon name="chat" class="icon icon-chat" alt="Чат"></nuxt-icon>
+          </li>
+        </ul>
         <div class="header__block2-profile">
           <div class="header__block2-profile__photo">
             <NuxtImg
@@ -183,6 +189,30 @@ watch(isMobile, (val) => {
     }
   }
 
+  &__block2-icons {
+    &__item {
+      &:hover .icon-search:deep(svg),
+      &:hover .icon-search:deep(path),
+      &:hover .icon-notification:deep(svg),
+      &:hover .icon-notification:deep(path),
+      &:hover .icon-chat:deep(svg),
+      &:hover .icon-chat:deep(path) {
+        color: @purple80;
+        transition: 0.2s ease;
+      }
+
+      &:active .icon-search:deep(svg),
+      &:active .icon-search:deep(path),
+      &:active .icon-notification:deep(svg),
+      &:active .icon-notification:deep(path),
+      &:active .icon-chat:deep(svg),
+      &:active .icon-chat:deep(path) {
+        color: @purple100;
+        transition: 0.2s ease;
+      }
+    }
+  }
+
   &__block2-profile {
     display: flex;
     justify-content: space-between;
@@ -229,17 +259,28 @@ watch(isMobile, (val) => {
     font-size: 16px;
     font-weight: 600;
     transition: 0.2s ease;
-
-    &:hover {
-      color: @gray80;
-      outline: none;
-    }
   }
 
   &:first-child {
     display: flex;
     align-items: center;
     gap: 8px;
+  }
+
+  &:hover {
+    cursor: pointer;
+
+    .list-item__link {
+      color: @purple80;
+    }
+  }
+
+  &:active {
+    .list-item__link,
+    .icon-hat:deep(svg),
+    .icon-hat:deep(path) {
+      color: @purple100;
+    }
   }
 }
 
@@ -306,9 +347,7 @@ watch(isMobile, (val) => {
 .icon-notification:deep(svg),
 .icon-notification:deep(path),
 .icon-chat:deep(svg),
-.icon-chat:deep(path),
-.icon-chevron:deep(svg),
-.icon-chevron:deep(path) {
+.icon-chat:deep(path) {
   width: 24px;
   height: 24px;
   color: @gray80;
@@ -317,9 +356,12 @@ watch(isMobile, (val) => {
 }
 
 .icon-chevron:deep(svg),
-.icon-hat:deep(path) {
+.icon-chevron:deep(path) {
   width: 16px;
   height: 16px;
+  color: @gray80;
+  fill: none !important;
+  cursor: pointer;
 }
 
 .icon-chevron {
