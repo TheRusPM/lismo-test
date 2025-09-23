@@ -62,6 +62,15 @@ const breadcrumbs = computed(() => {
     color: @purple80;
     font-size: 14px;
 
+    &:hover {
+      color: @purple70;
+    }
+
+    &:active,
+    &:focus {
+      color: @purple100;
+    }
+
     &.active {
       color: @purple50;
       pointer-events: none;

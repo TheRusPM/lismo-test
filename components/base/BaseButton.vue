@@ -85,7 +85,9 @@ const emit = defineEmits(["click"]);
 
 .disabled-btn {
   cursor: not-allowed;
-  background-color: @gray10;
-  color: @white;
+  background-color: @gray5;
+  color: @purple80;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>

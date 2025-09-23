@@ -5,10 +5,12 @@ import BaseInput from "~/components/base/BaseInput.vue";
 import BaseCheckbox from "~/components/base/BaseCheckbox.vue";
 import { useCourseStore } from "~/stores/useCourseStore";
 import { useFilterStore } from "~/stores/useFiltersStore";
+import { useMobile } from "~/composables/useMobile";
 import { skillsData } from "~/data/skills";
 
 const filterStore = useFilterStore();
 const store = useCourseStore();
+const { isMobile } = useMobile();
 
 const specializationsSeed = ref<string[]>([
   "Программирование",
@@ -267,7 +269,7 @@ watch(filterStore.deletedFilter, (df) => {
       <BaseInput
         name="subject"
         id="subject"
-        placeholder="Название направления"
+        placeholder="Поиск"
         v-model="subjectInput"
       />
       <div
@@ -418,8 +420,18 @@ watch(filterStore.deletedFilter, (df) => {
       >
     </BaseCollapse>
 
+    <BaseButton
+      v-if="isMobile"
+      class="sidebar__button-mobile"
+      type="button"
+      :disabled="!hasSelected"
+      @click="applyFilters()"
+    >
+      Применить
+    </BaseButton>
+
     <button
-      v-if="hasSelected && buttonTop !== null"
+      v-if="!isMobile && hasSelected && buttonTop !== null"
       class="sidebar__button"
       type="button"
       :style="{ top: buttonTop + 'px' }"
@@ -436,6 +448,7 @@ watch(filterStore.deletedFilter, (df) => {
   flex-direction: column;
   justify-content: center;
   gap: 24px;
+  min-width: 250px;
   max-width: 324px;
   background-color: @white;
   padding: 20px;
@@ -457,36 +470,10 @@ watch(filterStore.deletedFilter, (df) => {
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-width: 325px;
-    overflow-y: auto;
+    max-width: 315px;
     max-height: 384px;
-
-    &::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background-color: @purple40;
-      border-radius: 10px;
-    }
-
-    scrollbar-width: thin;
-    scrollbar-color: @purple40 transparent;
-
-    -ms-overflow-style: -ms-autohiding-scrollbar;
-    scrollbar-width: thin;
-    scrollbar-color: @purple40 transparent;
-    ::-webkit-scrollbar-button &::-webkit-scrollbar-button {
-      display: none;
-    }
-
-    &::-webkit-scrollbar-corner {
-      background: transparent;
-    }
+    padding-right: 10px;
+    overflow-y: auto;
   }
 
   &__list {
@@ -524,6 +511,14 @@ watch(filterStore.deletedFilter, (df) => {
     line-height: 20px;
     color: @gray60;
     align-self: flex-start;
+  }
+
+  &__button-mobile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 12px 24px;
   }
 
   &__button {
