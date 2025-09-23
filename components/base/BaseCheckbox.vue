@@ -1,21 +1,33 @@
 <script setup lang="ts">
+import { useFilterStore } from "~/stores/useFiltersStore";
+
+const filterStore = useFilterStore();
+
 const modelValue = defineModel<boolean>({ default: false });
 
 interface IProps {
   id?: string;
   text: string;
   name?: string;
+  category?: string;
 }
 
 const props = withDefaults(defineProps<IProps>(), {
   id: "",
   text: "",
   name: "",
+  category: "",
 });
 
 const handleChange = (event: Event) => {
   const input = event.target as HTMLInputElement;
   modelValue.value = input.checked;
+  console.log(props.text);
+  if (!modelValue.value) {
+    filterStore.addFilter(props.text, props.category);
+  } else {
+    filterStore.deleteFilter(props.text, props.category);
+  }
 };
 </script>
 

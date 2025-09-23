@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { useCourseStore } from "~/stores/useCourseStore";
+import { useFilterStore } from "~/stores/useFiltersStore";
+import BaseTabsFilters from "~/components/base/BaseTabsFilters.vue";
 
 definePageMeta({
   title: "Каталог курсов",
   layout: "default",
 });
 
+const filterStore = useFilterStore();
 const courseStore = useCourseStore();
 const allCourses = computed(() => courseStore.courses);
 const newCourses = computed(() => allCourses.value.slice(0, 3));
@@ -35,6 +38,12 @@ const viewedCourses = computed(() => {
   return shuffled.slice(0, 3);
 });
 
+const hasAppliedFilters = computed(
+  () => filterStore.isVisible && filterStore.visibleFilters.length > 0
+);
+
+const searchResults = computed(() => courseStore.filteredCourses);
+
 const router = useRouter();
 
 function goToNewPage() {
@@ -48,7 +57,7 @@ function goToNewPage() {
       <div class="catalog-page__sidebar">
         <Sidebar />
       </div>
-      <div class="catalog-page__content">
+      <div v-if="!hasAppliedFilters" class="catalog-page__content">
         <div class="catalog-page__content-popular">
           <div class="catalog-page__content-popular__head">
             <div class="catalog-page__content-popular__head-container">
@@ -191,15 +200,70 @@ function goToNewPage() {
           </div>
         </div>
       </div>
+      <div v-else class="catalog-page__search">
+        <div class="catalog-page__search-filters" v-if="filterStore.isVisible">
+          <BaseTabsFilters
+            v-for="(filter, i) in filterStore.visibleFilters"
+            :key="i"
+            :text="filter.tag"
+            :category="filter.title"
+          />
+        </div>
+        <div class="catalog-page__search-result">
+          <div
+            v-if="searchResults.length"
+            class="catalog-page__search-result__cards"
+          >
+            <CourseCard
+              v-for="course in searchResults"
+              :key="course.id"
+              :course-id="course.id"
+              class="catalog-page__course-card"
+            />
+          </div>
+          <div v-else class="catalog-page__search-result__empty">
+            К сожалению, нет результатов удовлетворяющих вашему запросу
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 <style scoped lang="less">
 .catalog-page {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1530px;
+
+  @media @bw1600 {
+    margin: 0 32px;
+  }
+
+  @media @bw500 {
+    margin: 0;
+  }
+
   &__title {
     font-family: "Nekst", sans-serif;
     font-size: 32px;
     margin: 36px 0 64px;
+
+    @media @bw1440 {
+      margin: 32px 0 40px;
+      font-size: 28px;
+    }
+
+    @media @bw1170 {
+      margin: 32px 0;
+      font-size: 24px;
+    }
+
+    @media @bw500 {
+      margin: 24px 16px 32px 16px;
+      font-size: 22px;
+    }
   }
 
   &__wrapper {
@@ -208,6 +272,10 @@ function goToNewPage() {
     gap: 24px;
     width: 100%;
     max-width: 1530px;
+
+    @media @bw768 {
+      flex-direction: column;
+    }
   }
 
   &__sidebar {
@@ -215,14 +283,24 @@ function goToNewPage() {
     flex-direction: column;
     width: 100%;
     max-width: 364px;
+
+    @media @bw650 {
+    }
   }
 
-  &__content {
+  &__content,
+  &__search {
     display: flex;
     flex-direction: column;
     gap: 32px;
     width: 100%;
     max-width: 1142px;
+  }
+
+  &__content-filters {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
   }
 
   &__content-popular,
@@ -234,16 +312,35 @@ function goToNewPage() {
     padding: 32px;
     border-radius: 24px;
 
+    @media @bw1600 {
+      padding: 20px 16px;
+    }
+
+    @media @bw500 {
+      padding: 20px 16px;
+      border-radius: 0;
+    }
+
     &__head {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      width: 100%;
     }
 
     &__head-container {
-      width: 100%;
       max-width: 802px;
+
+      @media @bw1440 {
+        max-width: 802px;
+      }
+
+      @media @bw1170 {
+        max-width: 658px;
+      }
+
+      @media @bw500 {
+        max-width: 802px;
+      }
     }
 
     &__head-title {
@@ -256,6 +353,18 @@ function goToNewPage() {
     &__head-title-text {
       font-family: "Nekst", sans-serif;
       font-size: 22px;
+
+      @media @bw1440 {
+        font-size: 20px;
+      }
+
+      @media @bw1170 {
+        font-size: 18px;
+      }
+
+      @media @bw500 {
+        font-size: 16px;
+      }
     }
   }
 
@@ -297,7 +406,14 @@ function goToNewPage() {
       margin-top: 4px;
       font-size: 16px;
       color: @gray80;
-      max-width: 802px;
+
+      @media @bw1170 {
+        font-size: 14px;
+      }
+
+      @media @bw500 {
+        font-size: 12px;
+      }
     }
   }
 
@@ -313,6 +429,14 @@ function goToNewPage() {
       font-size: 16px;
       color: @gray60;
       max-width: 802px;
+
+      @media @bw1170 {
+        font-size: 14px;
+      }
+
+      @media @bw500 {
+        font-size: 12px;
+      }
     }
 
     &__head-link {
@@ -322,6 +446,14 @@ function goToNewPage() {
       font-weight: bold;
       color: @purple80;
       text-decoration: none;
+
+      @media @bw1170 {
+        font-size: 16px;
+      }
+
+      @media @bw500 {
+        font-size: 14px;
+      }
 
       &:hover,
       &:hover .icon-arrow:deep(svg),
@@ -340,10 +472,67 @@ function goToNewPage() {
     flex-direction: column;
     gap: 32px;
 
+    @media @bw1600 {
+      column-gap: 24px;
+      row-gap: 24px;
+    }
+
+    @media @bw500 {
+      gap: 16px;
+    }
+
     &__body {
       display: flex;
       flex-wrap: wrap;
+      justify-content: center;
       gap: 24px;
+    }
+  }
+
+  &__search-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    width: 100%;
+  }
+
+  &__search-result {
+    display: flex;
+    justify-content: center;
+    padding: 32px;
+    border-radius: 24px;
+    background-color: @white;
+
+    @media @bw1600 {
+      padding: 20px 16px;
+      column-gap: 24px;
+      row-gap: 24px;
+    }
+
+    @media @bw500 {
+      padding: 20px 16px;
+      gap: 12px;
+    }
+
+    &__cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    &__empty {
+      font-size: 20px;
+      color: @gray40;
+      line-height: normal;
+
+      @media @bw768 {
+        font-size: 16px;
+      }
+
+      @media @bw500 {
+        font-size: 14px;
+      }
     }
   }
 }

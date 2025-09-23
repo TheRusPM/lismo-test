@@ -25,15 +25,14 @@ import Navbar from "~/components/Navbar.vue";
   background-color: @gray5;
 }
 
-// .layout__content {
-//   flex-grow: 1;
-//   display: flex;
-//   flex-direction: column;
-//   width: 100%;
-//   max-width: 1530px;
-// }
-
 .layout__content {
+  flex-grow: 1;
   display: flex;
+  width: 100%;
+  max-width: 1530px;
 }
+
+// .layout__content {
+//   display: flex;
+// }
 </style>

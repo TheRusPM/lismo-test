@@ -4,22 +4,26 @@ import BaseCollapse from "~/components/base/BaseCollapse.vue";
 import BaseInput from "~/components/base/BaseInput.vue";
 import BaseCheckbox from "~/components/base/BaseCheckbox.vue";
 import { useCourseStore } from "~/stores/useCourseStore";
+import { useFilterStore } from "~/stores/useFiltersStore";
+import { skillsData } from "~/data/skills";
 
+const filterStore = useFilterStore();
 const store = useCourseStore();
 
 const specializationsSeed = ref<string[]>([
   "Программирование",
   "Дизайн",
   "Разработка",
-  "Физическая культура",
   "Моделирование",
   "Инноватика",
-  "Аналитика больших данных",
+  "Аналитика",
   "Радиотехника",
   "Физика",
   "Кибербезопасность",
   "Юриспруденция",
   "Маркетинг",
+  "Физическая культура",
+  "Искусственный интеллект",
 ]);
 
 const humansSeed = ref<string[]>([
@@ -45,14 +49,7 @@ const periodsSeed = ref<string[]>([
 
 const docsSeed = ref<string[]>(["Сертификат", "Диплом о переподготовке"]);
 
-const skillsSeed = ref<string[]>([
-  "JavaScript",
-  "Python",
-  "Photoshop",
-  "Excel",
-  "Знание алгоритмов",
-  "Аналитическое мышление",
-]);
+const skillsSeed = ref<string[]>(skillsData);
 
 const hideEmpty = true;
 
@@ -237,15 +234,32 @@ watch(
 
 function applyFilters() {
   store.setFilters({
-    specializations: selectedSpecializations.value,
-    humans: selectedHumans.value,
-    prices: selectedPrices.value,
-    periods: selectedPeriods.value,
-    docs: selectedDocs.value,
-    skills: selectedSkills.value,
+    specializations: [...selected.specializations],
+    humans: [...selected.humans],
+    prices: [...selected.prices],
+    periods: [...selected.periods],
+    docs: [...selected.docs],
+    skills: [...selected.skills],
   });
-  console.log(store.filteredCourses);
+
+  filterStore.setFromCourseFilters(store.activeFilters);
 }
+
+watch(filterStore.deletedFilter, (df) => {
+  if (!df.cat || !df.title) return;
+
+  onToggle(df.cat as any, df.title, false);
+
+  store.setFilters({
+    specializations: [...selected.specializations],
+    humans: [...selected.humans],
+    prices: [...selected.prices],
+    periods: [...selected.periods],
+    docs: [...selected.docs],
+    skills: [...selected.skills],
+  });
+  filterStore.setFromCourseFilters(store.activeFilters);
+});
 </script>
 <template>
   <div class="sidebar">
@@ -270,6 +284,7 @@ function applyFilters() {
             :id="'spec-' + index"
             :text="spec.title"
             :model-value="isChecked('specializations', spec.title)"
+            :category="'specializations'"
             @update:modelValue="
               (val) => onToggle('specializations', spec.title, val)
             "
@@ -303,6 +318,7 @@ function applyFilters() {
           :id="'human-' + index"
           :text="human.title"
           :model-value="isChecked('humans', human.title)"
+          :category="'humans'"
           @update:modelValue="(val) => onToggle('humans', human.title, val)"
         />
         <span class="sidebar__list-count">{{ human.count }}</span>
@@ -320,6 +336,7 @@ function applyFilters() {
           :id="'price-' + index"
           :text="price.title"
           :model-value="isChecked('prices', price.title)"
+          :category="'prices'"
           @update:modelValue="(val) => onToggle('prices', price.title, val)"
         />
         <span class="sidebar__list-count">{{ price.count }}</span>
@@ -337,6 +354,7 @@ function applyFilters() {
           :id="'period-' + index"
           :text="period.title"
           :model-value="isChecked('periods', period.title)"
+          :category="'periods'"
           @update:modelValue="(val) => onToggle('periods', period.title, val)"
         />
         <span class="sidebar__list-count">{{ period.count }}</span>
@@ -354,6 +372,7 @@ function applyFilters() {
           :id="'doc-' + index"
           :text="doc.title"
           :model-value="isChecked('docs', doc.title)"
+          :category="'docs'"
           @update:modelValue="(val) => onToggle('docs', doc.title, val)"
         />
         <span class="sidebar__list-count">{{ doc.count }}</span>
@@ -378,6 +397,7 @@ function applyFilters() {
             :id="'skill-' + index"
             :text="skill.title"
             :model-value="isChecked('skills', skill.title)"
+            :category="'skills'"
             @update:modelValue="(val) => onToggle('skills', skill.title, val)"
           />
           <span class="sidebar__list-count">{{ skill.count }}</span>
@@ -436,7 +456,6 @@ function applyFilters() {
   &__list-wrapper {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     width: 100%;
     max-width: 325px;
     overflow-y: auto;

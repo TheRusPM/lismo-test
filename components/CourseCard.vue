@@ -321,6 +321,16 @@ onUnmounted(() => {
   border: 1px solid @gray20;
   border-radius: 24px;
 
+  @media @bw768 {
+    max-width: 254px;
+    width: fit-content;
+    max-height: 455px;
+    height: fit-content;
+    padding: 12px;
+    gap: 16px;
+    justify-content: flex-start;
+  }
+
   &--horizontal {
     flex-direction: row;
     gap: 16px;
@@ -328,11 +338,20 @@ onUnmounted(() => {
     height: 232px;
     max-height: 232px;
     padding: 16px;
+
+    @media @bw600 {
+      max-width: 254px;
+      width: fit-content;
+      max-height: 455px;
+      height: fit-content;
+      padding: 12px;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
   }
 
   &__block1 {
     position: relative;
-    // width: 100%;
   }
 
   &__block1-favorite {
@@ -414,11 +433,25 @@ onUnmounted(() => {
     background-color: @gray20;
     overflow: hidden;
 
+    @media @bw768 {
+      max-width: 230px;
+      min-width: 230px;
+      max-height: 153px;
+      height: 153px;
+    }
+
     &--horizontal {
       max-width: 224px;
       min-width: 224px;
       height: 234px;
       max-height: 234px;
+
+      @media @bw600 {
+        max-width: 230px;
+        min-width: 230px;
+        max-height: 153px;
+        height: 153px;
+      }
     }
   }
 
@@ -436,10 +469,22 @@ onUnmounted(() => {
     max-height: 204px;
     height: 204px;
 
+    @media @bw768 {
+      max-width: 230px;
+      max-height: 262px;
+      gap: 12px;
+    }
+
     &--horizontal {
       max-height: 234px;
       height: 234px;
       gap: 16px;
+
+      @media @bw600 {
+        max-width: 230px;
+        max-height: 262px;
+        gap: 12px;
+      }
     }
   }
 
@@ -450,10 +495,21 @@ onUnmounted(() => {
     max-height: 140px;
     height: 140px;
 
+    @media @bw768 {
+      max-height: fit-content;
+      height: auto;
+    }
+
     &--horizontal {
       max-width: 228px;
       max-height: 186px;
       height: 186px;
+
+      @media @bw600 {
+        max-width: 214px;
+        max-height: 170px;
+        height: fit-content;
+      }
     }
 
     &__title {
@@ -474,10 +530,18 @@ onUnmounted(() => {
       font-size: 20px;
       line-height: 26px;
 
+      @media @bw768 {
+        font-size: 16px;
+      }
+
       &--horizontal {
         max-width: 228px;
         font-size: 14px;
         line-height: 20px;
+
+        @media @bw600 {
+          font-size: 16px;
+        }
       }
     }
 
@@ -488,8 +552,16 @@ onUnmounted(() => {
       width: max-content;
       margin-top: 16px;
 
+      @media @bw768 {
+        max-width: 214px;
+      }
+
       &--horizontal {
         max-width: 228px;
+
+        @media @bw600 {
+          max-width: 214px;
+        }
       }
     }
 
@@ -505,6 +577,11 @@ onUnmounted(() => {
       line-clamp: 2;
       font-size: 12px;
       color: @gray100;
+
+      @media @bw768 {
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+      }
     }
 
     &__tags {
@@ -532,6 +609,11 @@ onUnmounted(() => {
       color: @gray100;
       cursor: default;
       flex-shrink: 0;
+
+      @media @bw768 {
+        max-width: 80px;
+        padding: 4px 8px;
+      }
     }
 
     &__tags-more {
@@ -549,6 +631,10 @@ onUnmounted(() => {
       padding: 4px 12px;
       background-color: @gray10;
       border-radius: 8px;
+
+      @media @bw768 {
+        padding: 4px 8px;
+      }
 
       &:hover {
         background-color: @gray5;

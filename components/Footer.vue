@@ -56,6 +56,10 @@
   margin-top: 120px;
   padding: 44px 0 40px;
 
+  @media @bw768 {
+    margin-top: 96px;
+  }
+
   @media @bw500 {
     margin-top: 56px;
     padding-top: 24px;

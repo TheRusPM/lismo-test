@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { useMobile } from "~/composables/useMobile";
 import { useKeenSlider } from "keen-slider/vue.es";
-
 import CourseCard from "~/components/CourseCard.vue";
 
 interface IProps {
@@ -11,10 +11,12 @@ interface IProps {
 const props = defineProps<IProps>();
 const current = ref(0);
 
+const { isMobile } = useMobile();
+
 const [container, slider] = useKeenSlider({
   slides: {
-    perView: 2.025,
-    spacing: 0,
+    perView: "auto",
+    spacing: 24,
   },
   slideChanged(s) {
     current.value = s.track.details.rel;
@@ -64,11 +66,65 @@ const [container, slider] = useKeenSlider({
   width: 100%;
   max-width: 1142px;
 
+  @media @bw1440 {
+    max-width: calc(fit-content - 32px);
+  }
+
+  @media (max-width: 1280px) {
+    max-width: 888px;
+  }
+
+  @media @bw1170 {
+    max-width: 836px;
+  }
+
+  @media (max-width: 1080px) {
+    max-width: 750px;
+  }
+
+  @media @bw1020 {
+    max-width: 728px;
+  }
+
+  @media @bw960 {
+    max-width: 666px;
+  }
+
+  @media (max-width: 910px) {
+    max-width: 632px;
+  }
+
+  @media (max-width: 870px) {
+    max-width: 604px;
+  }
+
+  @media (max-width: 846px) {
+    max-width: 586px;
+  }
+
+  @media (max-width: 828px) {
+    max-width: 520px;
+  }
+
+  @media @bw768 {
+    max-width: calc(fit-content - 32px);
+  }
+
+  @media @bw600 {
+    max-width: 446px;
+  }
+
+  .keen-slider {
+    overflow: hidden;
+    width: 100%;
+  }
+
   .keen-slider__slide {
     display: flex;
     justify-content: center;
     width: 100%;
     max-width: 500px;
+    flex-shrink: 0;
   }
 
   &__arrow {
